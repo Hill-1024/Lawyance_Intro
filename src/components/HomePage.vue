@@ -15,13 +15,13 @@
         <div class="hero__mark reveal is-visible" style="--delay: 120ms" aria-hidden="true">
           <BrandLogo variant="mark-only" />
         </div>
-        <h1 id="hero-title" class="reveal is-visible" style="--delay: 200ms">Lawyance</h1>
+        <h1 id="hero-title" class="reveal is-visible" style="--delay: 200ms">Lawver</h1>
         <p class="hero__lead reveal is-visible" style="--delay: 280ms">
-          由工大法智团队开发的中文法律 AI 助手。Lawyance 面向法律检索、案例分析、合同审查与专业咨询，
+          由工大法智团队开发的中文法律 AI 助手。Lawver 面向法律检索、案例分析、合同审查与专业咨询，
           用安静的界面和可核验的工作流，把复杂问题整理为清晰的法律研究路径。
         </p>
         <div class="hero__action reveal is-visible" style="--delay: 360ms">
-          <a href="https://law.mutsumi.moe" class="primary-cta" aria-label="进入 Lawyance 对话">进入对话</a>
+          <a href="https://law.mutsumi.moe" class="primary-cta" aria-label="进入 Lawver 对话">进入对话</a>
         </div>
       </div>
 
@@ -33,7 +33,7 @@
         <h2 id="abilities-title">从真实法律工作出发，先处理事实，再组织依据。</h2>
       </div>
 
-      <div class="text-rows" aria-label="Lawyance 能力">
+      <div class="text-rows" aria-label="Lawver 能力">
         <article v-for="item in abilities" :key="item.title" class="text-row reveal">
           <span>{{ item.no }}</span>
           <h3>{{ item.title }}</h3>
@@ -54,7 +54,7 @@
           <p>Agent 范式</p>
           <h2 id="method-title">从直接回答，到规划、行动与校验。</h2>
           <p>
-            Lawyance 在不同任务复杂度下切换推理范式。简单咨询保持直接，复杂问题先规划，再通过工具行动收集依据，
+            Lawver 在不同任务复杂度下切换推理范式。简单咨询保持直接，复杂问题先规划，再通过工具行动收集依据，
             最后进入输出校验，把答复收束到可阅读、可引用、可继续追问的法律表达。
           </p>
 
@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div class="agent-stack" aria-label="Lawyance Agent 范式">
+        <div class="agent-stack" aria-label="Lawver Agent 范式">
           <article
             v-for="(step, index) in workflow"
             :key="step.title"
@@ -106,7 +106,7 @@
 
       <div class="memory__body">
         <p class="memory__lead reveal">
-          Lawyance 不把所有历史都压进当前上下文，也不把记忆做成用户画像。系统先让当前问题、文档片段与工具结果进入注意力，
+          Lawver 不把所有历史都压进当前上下文，也不把记忆做成用户画像。系统先让当前问题、文档片段与工具结果进入注意力，
           再把对话级记忆中稳定的目标、约束与案件事实作为边界补入。
         </p>
 
@@ -162,8 +162,8 @@
         <BrandLogo variant="full" />
       </div>
       <h2 id="final-title" class="reveal">让法律咨询回到事实、条文与可验证的表达。</h2>
-      <p class="reveal">Lawyance 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
-      <a href="https://law.mutsumi.moe" class="primary-cta reveal" aria-label="进入 Lawyance 对话">进入对话</a>
+      <p class="reveal">Lawver 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
+      <a href="https://law.mutsumi.moe" class="primary-cta reveal" aria-label="进入 Lawver 对话">进入对话</a>
     </section>
   </main>
 </template>

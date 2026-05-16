@@ -1,14 +1,14 @@
-# Lawyance Intro
+# Lawver Intro
 
 [中文](./README.md) | English | [日本語](./README.ja.md)
 
-Lawyance Intro is the standalone product introduction site for Lawyance. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, agent workflow, memory boundaries, and trust statements for the Lawyance Chinese legal AI assistant.
+Lawver Intro is the standalone product introduction site for Lawver. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, agent workflow, memory boundaries, and trust statements for the Lawver Chinese legal AI assistant.
 
-This repository is not the main Lawyance application and not the source of the design system. It is a lightweight, static, independently deployable introduction site for users encountering the product for the first time.
+This repository is not the main Lawver application and not the source of the design system. It is a lightweight, static, independently deployable introduction site for users encountering the product for the first time.
 
 ## Page Content
 
-- **Hero**: Lawyance branding, Chinese legal AI assistant positioning, and entry link.
+- **Hero**: Lawver branding, Chinese legal AI assistant positioning, and entry link.
 - **Capabilities**: legal retrieval, case analysis, contract review, and consultation structuring.
 - **Agent workflow**: from direct answer to planning, action, and verification.
 - **Attention and memory**: the boundary between current context and conversation-level memory.
@@ -19,7 +19,7 @@ This repository is not the main Lawyance application and not the source of the d
 - Astro 5 static site.
 - Vue 3 components.
 - TypeScript.
-- Custom CSS and Lawyance brand visuals.
+- Custom CSS and Lawver brand visuals.
 
 ## Quick Start
 
@@ -64,16 +64,16 @@ pnpm preview
 | Path | Purpose |
 | --- | --- |
 | `src/components/HomePage.vue` | Main page content, scroll interaction, and section copy |
-| `src/components/BrandLogo.vue` | Lawyance brand mark component |
+| `src/components/BrandLogo.vue` | Lawver brand mark component |
 | `src/styles/global.css` | Layout, responsive styles, and motion |
 | `src/pages/index.astro` | Astro page entry |
 
 ## Maintenance Principles
 
 - Copy should help users understand the product instead of listing features mechanically.
-- Brand, color, and typography should stay aligned with the main Lawyance application.
+- Brand, color, and typography should stay aligned with the main Lawver application.
 - The page should remain static, fast, and easy to deploy without unnecessary client state.
-- CTA links point to the live Lawyance service; domain changes should be checked here as well.
+- CTA links point to the live Lawver service; domain changes should be checked here as well.
 
 ## License
 

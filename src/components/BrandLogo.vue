@@ -19,7 +19,7 @@
 
     <span class="brand-logo__body">
       <span class="brand-logo__word">
-        <span class="brand-logo__swash">L</span><span>awyance</span>
+        <span class="brand-logo__swash">L</span><span>awver</span>
       </span>
     </span>
   </component>
@@ -47,12 +47,12 @@ const rootAttrs = computed(() => {
   if (props.as === 'a') {
     return {
       href: props.href || '#top',
-      'aria-label': 'Lawyance',
+      'aria-label': 'Lawver',
     };
   }
 
   return {
-    'aria-label': 'Lawyance',
+    'aria-label': 'Lawver',
   };
 });
 </script>
