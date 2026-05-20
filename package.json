@@ -7,14 +7,19 @@
   "scripts": {
     "dev": "astro dev --host=0.0.0.0",
     "build": "astro check && astro build",
-    "preview": "astro preview --host=0.0.0.0"
+    "preview": "pnpm run build && wrangler dev",
+    "deploy": "pnpm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/vue": "^5.1.1",
     "astro": "^5.16.5",
     "typescript": "~5.8.2",
     "vue": "^3.5.22"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "wrangler": "^4.93.0"
+  }
 }
