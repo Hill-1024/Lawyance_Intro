@@ -4,6 +4,7 @@
       <BrandLogo as="a" href="#top" variant="compact" />
       <nav class="site-nav" aria-label="页面导航">
         <a href="#abilities">能力</a>
+        <a href="#workbench">工作台</a>
         <a href="#method">工作方式</a>
         <a href="#memory">记忆</a>
         <a href="#trust">边界</a>
@@ -15,13 +16,13 @@
         <div class="hero__mark reveal is-visible" style="--delay: 120ms" aria-hidden="true">
           <BrandLogo variant="mark-only" />
         </div>
-        <h1 id="hero-title" class="reveal is-visible" style="--delay: 200ms">Lawver</h1>
+        <h1 id="hero-title" class="reveal is-visible" style="--delay: 200ms">{{ brandName }}</h1>
         <p class="hero__lead reveal is-visible" style="--delay: 280ms">
-          由工大法智团队开发的中文法律 AI 助手。Lawver 面向法律检索、案例分析、合同审查与专业咨询，
-          用安静的界面和可核验的工作流，把复杂问题整理为清晰的法律研究路径。
+          由工大法智团队开发的中文法律 AI 工作台。{{ brandName }} 把法律咨询、法条与案例检索、企业信息查询、
+          PDF / Word 文档处理、模拟法庭和对话级记忆组织在同一套应用里，让复杂问题回到事实、依据与可继续核验的分析路径。
         </p>
         <div class="hero__action reveal is-visible" style="--delay: 360ms">
-          <a href="https://law.mutsumi.moe" class="primary-cta" aria-label="进入 Lawver 对话">进入对话</a>
+          <a href="https://law.mutsumi.moe" class="primary-cta" :aria-label="`进入 ${brandName} 对话`">进入对话</a>
         </div>
       </div>
 
@@ -33,11 +34,31 @@
         <h2 id="abilities-title">从真实法律工作出发，先处理事实，再组织依据。</h2>
       </div>
 
-      <div class="text-rows" aria-label="Lawver 能力">
+      <div class="text-rows" :aria-label="`${brandName} 能力`">
         <article v-for="item in abilities" :key="item.title" class="text-row reveal">
           <span>{{ item.no }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.body }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="workbench" class="section workbench" aria-labelledby="workbench-title">
+      <div class="section__heading reveal">
+        <p>应用工作台</p>
+        <h2 id="workbench-title">咨询、卷宗与庭审训练，沿着同一条案件线索展开。</h2>
+      </div>
+
+      <div class="workbench__layout" aria-label="核心工作台">
+        <article v-for="surface in workSurfaces" :key="surface.title" class="surface-pane reveal">
+          <div class="surface-pane__heading">
+            <span>{{ surface.no }}</span>
+            <h3>{{ surface.title }}</h3>
+          </div>
+          <p>{{ surface.body }}</p>
+          <ul>
+            <li v-for="point in surface.points" :key="point">{{ point }}</li>
+          </ul>
         </article>
       </div>
     </section>
@@ -54,8 +75,8 @@
           <p>Agent 范式</p>
           <h2 id="method-title">从直接回答，到规划、行动与校验。</h2>
           <p>
-            Lawver 在不同任务复杂度下切换推理范式。简单咨询保持直接，复杂问题先规划，再通过工具行动收集依据，
-            最后进入输出校验，把答复收束到可阅读、可引用、可继续追问的法律表达。
+            {{ brandName }} 在不同任务复杂度下切换工作方式。简单咨询保持直接，复杂任务先规划，
+            再通过统一工具边界收集依据，最后进入输出校验，把答复收束到可阅读、可引用、可继续追问的法律表达。
           </p>
 
           <div class="method__progress" aria-hidden="true">
@@ -67,7 +88,7 @@
           </div>
         </div>
 
-        <div class="agent-stack" aria-label="Lawver Agent 范式">
+        <div class="agent-stack" :aria-label="`${brandName} Agent 范式`">
           <article
             v-for="(step, index) in workflow"
             :key="step.title"
@@ -106,8 +127,8 @@
 
       <div class="memory__body">
         <p class="memory__lead reveal">
-          Lawver 不把所有历史都压进当前上下文，也不把记忆做成用户画像。系统先让当前问题、文档片段与工具结果进入注意力，
-          再把对话级记忆中稳定的目标、约束与案件事实作为边界补入。
+          {{ brandName }} 不把所有历史都压进当前上下文，也不把记忆做成用户画像。系统先让当前问题、卷宗片段与工具结果进入注意力，
+          再把对话级记忆或庭审角色记忆中稳定的目标、约束与案件事实作为边界补入。
         </p>
 
         <div class="memory__balance reveal" aria-label="注意力与记忆的平衡">
@@ -162,8 +183,8 @@
         <BrandLogo variant="full" />
       </div>
       <h2 id="final-title" class="reveal">让法律咨询回到事实、条文与可验证的表达。</h2>
-      <p class="reveal">Lawver 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
-      <a href="https://law.mutsumi.moe" class="primary-cta reveal" aria-label="进入 Lawver 对话">进入对话</a>
+      <p class="reveal">{{ brandName }} 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
+      <a href="https://law.mutsumi.moe" class="primary-cta reveal" :aria-label="`进入 ${brandName} 对话`">进入对话</a>
     </section>
   </main>
 </template>
@@ -176,27 +197,48 @@ const pageRef = ref<HTMLElement | null>(null);
 const trustRef = ref<HTMLElement | null>(null);
 const methodRef = ref<HTMLElement | null>(null);
 const activeWorkflowIndex = ref(0);
+const brandName = 'Lawver';
 
 const abilities = [
   {
     no: '01',
-    title: '法律检索',
-    body: '查询法律法规条文、司法解释及经典判例，围绕争议事实保留可追溯的检索脉络。',
+    title: '法律与案例检索',
+    body: '查询法律法规、司法解释、来源链接和相似案例；联网搜索只补充公开网页材料，法律依据优先回到可核验信源。',
   },
   {
     no: '02',
-    title: '案例分析',
-    body: '基于事实进行民事、行政、刑事等多维分析，提取争议焦点、裁判要点与适用条件。',
+    title: '企业与主体信息',
+    body: '接入企业简介、工商登记、股东、主要人员、联系方式、上市信息和对外投资查询，帮助商业法律问题先确认主体与背景。',
   },
   {
     no: '03',
-    title: '合同审查',
-    body: '支持 PDF 与 Word 文档的批注、修改及风险识别，保留上传文档与生成结果的工作区。',
+    title: '卷宗与文档处理',
+    body: '读取 PDF / Word 原文，支持 PDF 句级坐标批注、Word 段落批注、工作区文件清点与生成结果回写，避免附件在不同会话间串线。',
   },
   {
     no: '04',
-    title: '专业咨询',
-    body: '为律师及法律从业者提供客观、严谨的法律分析意见，不以迎合用户预设为目标。',
+    title: '模拟法庭训练',
+    body: '支持民事、行政、刑事庭审流程，让法官、对方律师、复盘员与我方代理围绕公开案卷和私有作战笔记进行压力测试。',
+  },
+  {
+    no: '05',
+    title: '咨询与输出审查',
+    body: '默认咨询保持直接，复杂任务进入 Plan-and-Solve；输出前可通过 OCP 审查结构、引用、表格和表达一致性。',
+  },
+];
+
+const workSurfaces = [
+  {
+    no: 'Consult',
+    title: '法律咨询工作台',
+    body: '对话、文件、上下文用量、工作区和生成结果在同一界面中保持同步，适合从事实整理一路推进到法律意见初稿。',
+    points: ['对话分叉、撤回、编辑与重新生成', '上传文件、生成文件与本地缓存同步', '默认咨询、Plan-and-Solve 与 OCP 可按任务切换'],
+  },
+  {
+    no: 'Court',
+    title: '模拟法庭工作台',
+    body: '用公开案卷建立共同事实，用私有作战笔记保留策略；不同 AI 角色拥有隔离记忆，庭审记录持续沉淀为可复盘的时间线。',
+    points: ['民事、行政、刑事三类庭审入口', '法官、对方律师、复盘员和我方代理分工', '插话、撤回、分支与角色记忆清理'],
   },
 ];
 
@@ -204,31 +246,31 @@ const workflow = [
   {
     no: 'Default',
     phase: 'Direct',
-    title: '直接咨询与工具调用',
-    body: '默认模式接收问题、调用工具、形成答复，并可在输出前进入 OCP 审查。',
+    title: '默认咨询',
+    body: '默认模式接收问题、同步必要记忆、调用可见工具并形成答复，适合事实边界清楚的咨询和文档问答。',
     details: [
       { label: '适用', value: '明确、边界清晰的法律问题' },
-      { label: '动作', value: '理解问题后直接组织答复' },
+      { label: '动作', value: '直接组织事实、依据与结论' },
     ],
   },
   {
     no: 'Plan',
     phase: 'Plan & Solve',
     title: 'Plan & Solve',
-    body: '复杂任务先拆成有序步骤，再逐步执行。适合劳动仲裁、民间借贷、房屋质量等长流程问题。',
+    body: '复杂任务先提交结构化计划，再逐步执行和汇总，避免多请求、多事实、多工具任务在中途失焦。',
     details: [
       { label: '适用', value: '多事实、多请求、长链路分析' },
       { label: '动作', value: '先形成步骤，再逐项推进' },
     ],
   },
   {
-    no: 'ReAct',
-    phase: 'Reason + Act',
-    title: 'Reasoning + Acting',
-    body: '在推理和行动之间循环，直到收集到足够信息，再输出最终答案。',
+    no: 'Tools',
+    phase: 'Tool Boundary',
+    title: 'mcps 工具转发',
+    body: '法律检索、企业信息、联网搜索、文件处理和记忆工具都经由统一中间层暴露，agent 不绕过业务边界直接触碰底层客户端。',
     details: [
       { label: '适用', value: '需要检索、比对与补充事实的任务' },
-      { label: '动作', value: '边推理边调用工具验证依据' },
+      { label: '动作', value: '按工具 scope 收集和校验依据' },
     ],
   },
   {
@@ -246,18 +288,23 @@ const workflow = [
 const trustItems = [
   {
     no: 'A',
-    title: '本地化存储',
-    body: '对话、附件缓存与记忆快照优先保存在用户浏览器的 IndexedDB 中，本地持久化与导入导出由用户侧控制。',
+    title: '浏览器优先持久',
+    body: '对话、庭审、附件缓存与记忆快照优先保存在用户浏览器 IndexedDB 中，本地持久化与导入导出由用户侧控制。',
   },
   {
     no: 'B',
     title: '活跃同步',
-    body: '咨询时仅同步当前请求需要的历史、文件与记忆快照，服务端用于工具调用、生成与输出校验。',
+    body: '咨询或庭审时仅同步当前请求需要的历史、文件与记忆快照，服务端用于工具调用、生成、审查和角色回合推进。',
   },
   {
     no: 'C',
-    title: '不做长期留存',
-    body: '服务端只维护活跃会话缓存与临时工作区，超时后清理，不持久化存储用户对话和文档数据。',
+    title: '工作区隔离',
+    body: '上传文件与生成结果落在用户 / 对话 / 庭审隔离的 TEMP 与 Result 空间，路径校验集中处理，避免跨会话读写。',
+  },
+  {
+    no: 'D',
+    title: '认证与审计',
+    body: '登录、角色、管理员面板、API 访问日志和基础限流共同构成内部原型阶段的访问边界，公开部署前仍需按域名收紧。',
   },
 ];
 
@@ -269,13 +316,13 @@ const memoryItems = [
   },
   {
     no: '02',
-    title: '深查召回',
-    body: '当问题依赖早先事实且当前上下文不足时，通过对话级记忆按关键词、实体、语义标签、时序与优先级召回。',
+    title: '多路召回',
+    body: '当问题依赖早先事实且当前上下文不足时，通过关键词、实体、语义标签、时序、优先级与可选 embedding 信号召回。',
   },
   {
     no: '03',
-    title: '用户侧持久',
-    body: '记忆快照随对话保存在浏览器 IndexedDB 中，服务端只在活跃咨询时使用缓存参与同步和生成。',
+    title: '作用域隔离',
+    body: '普通咨询使用对话级记忆；模拟法庭为法官、对方律师、复盘员和我方代理分配独立角色记忆，避免私有信息直接串场。',
   },
 ];
 
