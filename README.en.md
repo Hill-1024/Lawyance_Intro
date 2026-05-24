@@ -2,7 +2,7 @@
 
 [中文](./README.md) | English | [日本語](./README.ja.md)
 
-Lawver Intro is the standalone product introduction site for Lawver. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, application workbenches, agent workflow, memory boundaries, and trust statements for the Lawver Chinese legal AI workspace.
+Lawver Intro is the standalone product introduction site for Lawver. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, application workbenches, working modes, memory boundaries, and trust statements for the Lawver Chinese legal AI workspace.
 
 This repository is not the main Lawver application and not the source of the design system. It is a lightweight, static, independently deployable introduction site for users encountering the product for the first time.
 
@@ -10,8 +10,8 @@ This repository is not the main Lawver application and not the source of the des
 
 - **Hero**: Lawver branding, Chinese legal AI workspace positioning, and entry link.
 - **Capabilities**: legal and case retrieval, company information lookup, dossier processing, mock court, and output review.
-- **Application workbenches**: separates the legal consultation workspace from the mock court workspace, including files, memory, court roles, and review paths.
-- **Agent workflow**: default consultation, Plan-and-Solve, the unified tool boundary, and OCP output review.
+- **Application workbenches**: separates the legal consultation workspace from the mock court workspace, including files, memory, court roles, review paths, and the mcps tool entry.
+- **Working modes**: default consultation, Plan-and-Solve, and OCP output review.
 - **Attention and memory**: the boundary between current context, conversation-level memory, and court role memory.
 - **Trust boundary**: browser-first persistence, workspace isolation, authentication/audit controls, and careful legal expression.
 
