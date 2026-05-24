@@ -361,15 +361,17 @@ const measureDarkProgress = () => {
 
   const rect = trust.getBoundingClientRect();
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-  const enter = smoothstep(rect.top, viewportHeight * 0.58, viewportHeight * 0.08);
-  const leave = smoothstep(rect.bottom, viewportHeight * 1.04, viewportHeight * 0.34);
+  const visibleHeight = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0));
+  const maxVisibleHeight = Math.max(1, Math.min(rect.height, viewportHeight));
+  const visibleCoverage = visibleHeight / maxVisibleHeight;
 
-  return clamp(enter * (1 - leave));
+  return smoothstep(visibleCoverage, 0.08, 0.88);
 };
 
 const animateAmbientBackground = () => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const velocity = reducedMotion ? 1 : 0.24;
+  const isDarkening = targetDarkProgress > renderedDarkProgress;
+  const velocity = reducedMotion ? 1 : isDarkening ? 0.42 : 0.3;
 
   renderedDarkProgress += (targetDarkProgress - renderedDarkProgress) * velocity;
 
