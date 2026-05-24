@@ -373,6 +373,13 @@ const animateAmbientBackground = () => {
   const isDarkening = targetDarkProgress > renderedDarkProgress;
   const velocity = reducedMotion ? 1 : isDarkening ? 0.42 : 0.3;
 
+  if (targetDarkProgress >= 0.999 || targetDarkProgress <= 0.001) {
+    renderedDarkProgress = targetDarkProgress;
+    paintAmbientBackground(renderedDarkProgress);
+    animationFrame = 0;
+    return;
+  }
+
   renderedDarkProgress += (targetDarkProgress - renderedDarkProgress) * velocity;
 
   if (Math.abs(targetDarkProgress - renderedDarkProgress) < 0.001) {
