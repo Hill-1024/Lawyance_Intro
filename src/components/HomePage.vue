@@ -72,11 +72,11 @@
     >
       <div class="method__sticky">
         <div class="method__copy reveal">
-          <p>Agent 范式</p>
-          <h2 id="method-title">从直接回答，到规划、行动与校验。</h2>
+          <p>工作方式</p>
+          <h2 id="method-title">从直接回答，到规划与输出审查。</h2>
           <p>
             {{ brandName }} 在不同任务复杂度下切换工作方式。简单咨询保持直接，复杂任务先规划，
-            再通过统一工具边界收集依据，最后进入输出校验，把答复收束到可阅读、可引用、可继续追问的法律表达。
+            需要外部依据时经由统一工具入口取数，最后进入输出审查，把答复收束到可阅读、可引用、可继续追问的法律表达。
           </p>
 
           <div class="method__progress" aria-hidden="true">
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <div class="agent-stack" :aria-label="`${brandName} Agent 范式`">
+        <div class="agent-stack" :aria-label="`${brandName} 工作方式`">
           <article
             v-for="(step, index) in workflow"
             :key="step.title"
@@ -232,13 +232,13 @@ const workSurfaces = [
     no: 'Consult',
     title: '法律咨询工作台',
     body: '对话、文件、上下文用量、工作区和生成结果在同一界面中保持同步，适合从事实整理一路推进到法律意见初稿。',
-    points: ['对话分叉、撤回、编辑与重新生成', '上传文件、生成文件与本地缓存同步', '默认咨询、Plan-and-Solve 与 OCP 可按任务切换'],
+    points: ['对话分叉、撤回、编辑与重新生成', '上传文件、生成文件与本地缓存同步', '法律检索、企业信息、联网和文件工具统一经 mcps 进入'],
   },
   {
     no: 'Court',
     title: '模拟法庭工作台',
     body: '用公开案卷建立共同事实，用私有作战笔记保留策略；不同 AI 角色拥有隔离记忆，庭审记录持续沉淀为可复盘的时间线。',
-    points: ['民事、行政、刑事三类庭审入口', '法官、对方律师、复盘员和我方代理分工', '插话、撤回、分支与角色记忆清理'],
+    points: ['民事、行政、刑事三类庭审入口', '法官、对方律师、复盘员和我方代理分工', '插话、撤回、分支、角色记忆清理与 OCP 复盘'],
   },
 ];
 
@@ -261,16 +261,6 @@ const workflow = [
     details: [
       { label: '适用', value: '多事实、多请求、长链路分析' },
       { label: '动作', value: '先形成步骤，再逐项推进' },
-    ],
-  },
-  {
-    no: 'Tools',
-    phase: 'Tool Boundary',
-    title: 'mcps 工具转发',
-    body: '法律检索、企业信息、联网搜索、文件处理和记忆工具都经由统一中间层暴露，agent 不绕过业务边界直接触碰底层客户端。',
-    details: [
-      { label: '适用', value: '需要检索、比对与补充事实的任务' },
-      { label: '动作', value: '按工具 scope 收集和校验依据' },
     ],
   },
   {
