@@ -2,17 +2,18 @@
 
 [中文](./README.md) | English | [日本語](./README.ja.md)
 
-Lawyance Intro is the standalone product introduction site for Lawyance. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, agent workflow, memory boundaries, and trust statements for the Lawyance Chinese legal AI assistant.
+Lawyance Intro is the standalone product introduction site for Lawyance. Built with Astro and Vue 3, it presents the first brand impression, core capabilities, application workbenches, agent workflow, memory boundaries, and trust statements for the Lawyance Chinese legal AI workspace.
 
 This repository is not the main Lawyance application and not the source of the design system. It is a lightweight, static, independently deployable introduction site for users encountering the product for the first time.
 
 ## Page Content
 
-- **Hero**: Lawyance branding, Chinese legal AI assistant positioning, and entry link.
-- **Capabilities**: legal retrieval, case analysis, contract review, and consultation structuring.
-- **Agent workflow**: from direct answer to planning, action, and verification.
-- **Attention and memory**: the boundary between current context and conversation-level memory.
-- **Trust boundary**: data boundaries, verifiable sources, and careful legal expression.
+- **Hero**: Lawyance branding, Chinese legal AI workspace positioning, and entry link.
+- **Capabilities**: legal and case retrieval, company information lookup, dossier processing, mock court, and output review.
+- **Application workbenches**: separates the legal consultation workspace from the mock court workspace, including files, memory, court roles, and review paths.
+- **Agent workflow**: default consultation, Plan-and-Solve, the unified tool boundary, and OCP output review.
+- **Attention and memory**: the boundary between current context, conversation-level memory, and court role memory.
+- **Trust boundary**: browser-first persistence, workspace isolation, authentication/audit controls, and careful legal expression.
 
 ## Stack
 
