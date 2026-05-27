@@ -1,17 +1,8 @@
 <template>
   <main id="top" ref="pageRef" class="page">
-    <header class="site-header reveal is-visible" style="--delay: 60ms">
-      <BrandLogo as="a" href="#top" variant="compact" />
-      <nav class="site-nav" aria-label="页面导航">
-        <a href="#abilities">能力</a>
-        <a href="#workbench">工作台</a>
-        <a href="#method">工作方式</a>
-        <a href="#memory">记忆</a>
-        <a href="#trust">边界</a>
-      </nav>
-    </header>
+    <SiteHeader :is-home="true" active-page="home" />
 
-    <section class="hero" aria-labelledby="hero-title">
+    <section class="hero hero--display" aria-labelledby="hero-title">
       <div class="hero__content">
         <div class="hero__mark reveal is-visible" style="--delay: 120ms" aria-hidden="true">
           <BrandLogo variant="mark-only" />
@@ -22,7 +13,18 @@
           PDF / Word 文档处理、模拟法庭和对话级记忆组织在同一套应用里，让复杂问题回到事实、依据与可继续核验的分析路径。
         </p>
         <div class="hero__action reveal is-visible" style="--delay: 360ms">
-          <a href="https://law.mutsumi.moe" class="primary-cta" :aria-label="`进入 ${brandName} 对话`">进入对话</a>
+          <div class="hero__cta-group">
+            <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer" :aria-label="`进入 ${brandName} Web端`">
+              <span>进入 Web 工作台</span>
+            </a>
+            <a :href="releaseInfo?.apkUrl || '/download'" class="secondary-cta" :aria-label="`下载 ${brandName} Android 应用`">
+              <span>下载 Android 应用 ({{ releaseInfo?.tagName || '最新版' }})</span>
+            </a>
+          </div>
+          <p class="hero__download-meta" v-if="releaseInfo">
+            最新版本: <span>{{ releaseInfo.tagName }}</span> • 大小: <span>{{ releaseInfo.apkSize }}</span> • 
+            <a href="/download" class="meta-link">前往下载中心 &rarr;</a>
+          </p>
         </div>
       </div>
 
@@ -184,7 +186,10 @@
       </div>
       <h2 id="final-title" class="reveal">让法律咨询回到事实、条文与可验证的表达。</h2>
       <p class="reveal">{{ brandName }} 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
-      <a href="https://law.mutsumi.moe" class="primary-cta reveal" :aria-label="`进入 ${brandName} 对话`">进入对话</a>
+      <div class="final__cta-group reveal" style="--delay: 200ms">
+        <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer" :aria-label="`进入 ${brandName} Web端`">进入 Web 工作台</a>
+        <a :href="releaseInfo?.apkUrl || '/download'" class="secondary-cta">下载 Android 应用</a>
+      </div>
     </section>
   </main>
 </template>
@@ -192,6 +197,19 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 import BrandLogo from './BrandLogo.vue';
+import SiteHeader from './SiteHeader.vue';
+
+interface ReleaseInfo {
+  tagName: string;
+  htmlUrl: string;
+  apkUrl: string;
+  apkSize: string;
+  publishedAt: string;
+}
+
+defineProps<{
+  releaseInfo?: ReleaseInfo;
+}>();
 
 const pageRef = ref<HTMLElement | null>(null);
 const trustRef = ref<HTMLElement | null>(null);
@@ -498,3 +516,81 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.hero__cta-group, .final__cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 34px;
+}
+
+.hero__download-meta {
+  margin: 12px 0 0 !important;
+  color: var(--quiet);
+  font-size: 13px !important;
+}
+
+.hero__download-meta span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meta-link {
+  color: var(--primary) !important;
+  font-weight: 500;
+  transition: color 200ms ease;
+}
+
+.meta-link:hover {
+  color: var(--primary-dark) !important;
+  text-decoration: underline;
+}
+
+/* Secondary CTA Styling that matches premium aesthetics */
+.secondary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: 0 4px 12px rgba(20, 23, 31, 0.03);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 20px;
+  padding: 13px 26px;
+  transition: transform 240ms var(--ease-out), background 240ms var(--ease-out), border-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out), color 240ms var(--ease-out);
+}
+
+.secondary-cta:hover {
+  border-color: var(--primary);
+  background: var(--paper);
+  color: var(--primary);
+  box-shadow: 0 6px 16px rgba(59, 98, 184, 0.1);
+  transform: translateY(-1px);
+}
+
+.secondary-cta:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .hero__cta-group, .final__cta-group {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .primary-cta, .secondary-cta {
+    width: 100%;
+    max-width: 304px;
+  }
+}
+</style>

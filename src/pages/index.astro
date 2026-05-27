@@ -1,21 +1,14 @@
 ---
 import HomePage from '../components/HomePage.vue';
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { fetchLatestRelease } from '../utils/github';
+
+const releaseInfo = await fetchLatestRelease();
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Lawver 是面向中文法律场景的 AI 工作台，用于法律咨询、法条案例检索、企业信息查询、文档处理、模拟法庭与输出校验。"
-    />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>Lawver | 法律 AI 工作台</title>
-  </head>
-  <body>
-    <HomePage client:load />
-  </body>
-</html>
+<BaseLayout
+  title="Lawver | 法律 AI 工作台"
+  description="Lawver 是面向中文法律场景的 AI 工作台，用于法律咨询、法条案例检索、企业信息查询、文档处理、模拟法庭与输出校验。"
+>
+  <HomePage client:load :releaseInfo={releaseInfo} />
+</BaseLayout>
