@@ -10,5 +10,5 @@ const releaseInfo = await fetchLatestRelease();
   title="Lawver | 法律 AI 工作台"
   description="Lawver 是面向中文法律场景的 AI 工作台，用于法律咨询、法条案例检索、企业信息查询、文档处理、模拟法庭与输出校验。"
 >
-  <HomePage client:load :releaseInfo={releaseInfo} />
+  <HomePage client:load releaseInfo={releaseInfo} />
 </BaseLayout>

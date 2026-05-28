@@ -10,5 +10,5 @@ const releaseInfo = await fetchLatestRelease();
   title="下载中心 | Lawver"
   description="下载 Lawver 法律 AI 工作台客户端，支持网页版及原生 Android 客户端下载。"
 >
-  <DownloadPage client:load :releaseInfo={releaseInfo} />
+  <DownloadPage client:load releaseInfo={releaseInfo} />
 </BaseLayout>

@@ -6,51 +6,122 @@ export interface ReleaseInfo {
   publishedAt: string;
 }
 
-export async function fetchLatestRelease(): Promise<ReleaseInfo> {
-  const fallback: ReleaseInfo = {
-    tagName: 'v1.1.2',
-    htmlUrl: 'https://github.com/Hill-1024/Lawyance/releases',
-    apkUrl: 'https://github.com/Hill-1024/Lawyance/releases/download/v1.1.2/Lawyance-1.1.2.apk',
-    apkSize: '45.8 MB',
-    publishedAt: '2026-05-27T08:00:00Z',
-  };
+interface BackendReleaseInfo {
+  versionName?: string;
+  apkUrl?: string;
+  size?: number;
+  publishedAt?: string;
+}
+
+interface GitHubReleaseAsset {
+  name: string;
+  size?: number;
+  browser_download_url?: string;
+}
+
+interface GitHubReleaseInfo {
+  tag_name?: string;
+  html_url?: string;
+  published_at?: string;
+  assets?: GitHubReleaseAsset[];
+}
+
+const appOrigin = 'https://law.mutsumi.moe';
+const androidReleaseUrl = `${appOrigin}/api/releases/android/latest`;
+const androidApkUrl = `${appOrigin}/api/releases/android/apk`;
+const githubReleaseUrl = 'https://github.com/Hill-1024/Lawyance/releases/latest';
+const githubReleaseApiUrl = 'https://api.github.com/repos/Hill-1024/Lawyance/releases/latest';
+const requestTimeoutMs = 6000;
+
+const fallback: ReleaseInfo = {
+  tagName: '最新版',
+  htmlUrl: githubReleaseUrl,
+  apkUrl: androidApkUrl,
+  apkSize: '最新版本',
+  publishedAt: '',
+};
+
+const withTagPrefix = (versionName?: string) => {
+  if (!versionName) return fallback.tagName;
+  return versionName.startsWith('v') ? versionName : `v${versionName}`;
+};
+
+const formatSize = (size?: number) => {
+  if (!Number.isFinite(size) || !size) return fallback.apkSize;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const normalizeApkUrl = (apkUrl?: string) => {
+  if (!apkUrl) return androidApkUrl;
 
   try {
-    // Timeout-enabled fetch for resilience
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    return new URL(apkUrl, appOrigin).toString();
+  } catch {
+    return androidApkUrl;
+  }
+};
 
-    const response = await fetch('https://api.github.com/repos/Hill-1024/Lawyance/releases/latest', {
-      headers: {
-        'User-Agent': 'Astro-Build-Lawyance-Intro',
-      },
-      signal: controller.signal
+async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), requestTimeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...init,
+      signal: controller.signal,
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
-      console.warn(`[GitHub API] Failed to fetch latest release: ${response.status}. Using local fallback.`);
-      return fallback;
+      throw new Error(`Request failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    const apkAsset = data.assets?.find((asset: any) => asset.name.endsWith('.apk'));
-    
-    let apkSizeStr = fallback.apkSize;
-    if (apkAsset && apkAsset.size) {
-      apkSizeStr = `${(apkAsset.size / (1024 * 1024)).toFixed(1)} MB`;
-    }
-
-    return {
-      tagName: data.tag_name || fallback.tagName,
-      htmlUrl: data.html_url || fallback.htmlUrl,
-      apkUrl: apkAsset ? apkAsset.browser_download_url : fallback.apkUrl,
-      apkSize: apkSizeStr,
-      publishedAt: data.published_at || fallback.publishedAt,
-    };
-  } catch (error) {
-    console.error('[GitHub API] Error fetching latest release. Using local fallback.', error);
-    return fallback;
+    return await response.json() as T;
+  } finally {
+    clearTimeout(timeoutId);
   }
+}
+
+async function fetchBackendRelease(): Promise<ReleaseInfo> {
+  const data = await fetchJson<BackendReleaseInfo>(androidReleaseUrl);
+
+  return {
+    tagName: withTagPrefix(data.versionName),
+    htmlUrl: githubReleaseUrl,
+    apkUrl: normalizeApkUrl(data.apkUrl),
+    apkSize: formatSize(data.size),
+    publishedAt: data.publishedAt || fallback.publishedAt,
+  };
+}
+
+async function fetchGitHubRelease(): Promise<ReleaseInfo> {
+  const data = await fetchJson<GitHubReleaseInfo>(githubReleaseApiUrl, {
+    headers: {
+      'User-Agent': 'Astro-Build-Lawyance-Intro',
+    },
+  });
+  const apkAsset = data.assets?.find((asset) => asset.name.endsWith('.apk'));
+
+  return {
+    tagName: data.tag_name || fallback.tagName,
+    htmlUrl: data.html_url || githubReleaseUrl,
+    apkUrl: apkAsset?.browser_download_url || androidApkUrl,
+    apkSize: formatSize(apkAsset?.size),
+    publishedAt: data.published_at || fallback.publishedAt,
+  };
+}
+
+export async function fetchLatestRelease(): Promise<ReleaseInfo> {
+  try {
+    return await fetchBackendRelease();
+  } catch (error) {
+    console.warn('[Release API] Failed to fetch backend Android release. Falling back to GitHub release metadata.', error);
+  }
+
+  try {
+    return await fetchGitHubRelease();
+  } catch (error) {
+    console.error('[GitHub API] Error fetching latest release. Using backend APK fallback.', error);
+  }
+
+  return fallback;
 }
