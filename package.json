@@ -6,12 +6,14 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev": "astro dev --host=0.0.0.0",
-    "build": "astro check && astro build",
+    "fetch:apk": "node scripts/fetch-apk.mjs",
+    "build": "node scripts/fetch-apk.mjs && astro check && astro build",
     "preview": "astro preview --host=0.0.0.0"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/vue": "^6.0.1",
+    "@types/node": "^26.5.1",
     "astro": "^6.3.8",
     "typescript": "~5.8.2",
     "vue": "^3.5.22"

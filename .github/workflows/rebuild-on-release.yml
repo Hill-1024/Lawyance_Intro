@@ -1,0 +1,137 @@
+name: Rebuild Site on Upstream Release
+
+# The upstream app repository already POSTs a Cloudflare Pages deploy hook when it
+# publishes a release (`.github/workflows/rebuild-intro-page.yml` over there), and
+# that path is the primary trigger. This workflow is the safety net for it: on a
+# schedule it compares the upstream release with the version the live site actually
+# serves, and rebuilds when the two drift apart because a hook was missed, a Pages
+# build failed, or a build could not reach GitHub.
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even when the live site already matches upstream
+        required: false
+        default: false
+        type: boolean
+  repository_dispatch:
+    types: [upstream-release]
+  schedule:
+    # Every 6 hours; scheduled workflows only fire from the default branch.
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-on-release
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: Hill-1024/Lawyance
+  SITE_ORIGIN: https://lawver.mutsumi.moe
+  PRODUCTION_BRANCH: main
+
+jobs:
+  rebuild:
+    name: Compare the upstream release with the live site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PRODUCTION_BRANCH }}
+          fetch-depth: 0
+
+      - name: Resolve the upstream release
+        id: upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="$(gh api "repos/${UPSTREAM_REPO}/releases/latest" --jq '.tag_name')"
+          if [ -z "$tag" ]; then
+            echo "Could not resolve the latest release of ${UPSTREAM_REPO}" >&2
+            exit 1
+          fi
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "Upstream latest release: ${tag}"
+
+      - name: Resolve the deployed version
+        id: deployed
+        run: |
+          set -euo pipefail
+          tag="$(curl -fsSL --max-time 20 "${SITE_ORIGIN}/apk/version.json" | jq -r '.tagName // empty')" || tag=""
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "Live site reports: ${tag:-<no manifest>}"
+
+      - name: Decide whether a rebuild is needed
+        id: decide
+        env:
+          UPSTREAM_TAG: ${{ steps.upstream.outputs.tag }}
+          DEPLOYED_TAG: ${{ steps.deployed.outputs.tag }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force || 'false' }}
+        run: |
+          set -euo pipefail
+          if [ "${UPSTREAM_TAG}" = "${DEPLOYED_TAG}" ] && [ "${FORCE}" != "true" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "The live site already serves ${UPSTREAM_TAG}; nothing to do."
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "Rebuild needed: upstream is ${UPSTREAM_TAG}, live site is ${DEPLOYED_TAG:-<no manifest>}."
+          fi
+
+      - name: Trigger the Cloudflare Pages deploy hook
+        id: hook
+        if: steps.decide.outputs.needed == 'true'
+        env:
+          CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_PAGES_DEPLOY_HOOK:-}" ]; then
+            echo "used_hook=false" >> "$GITHUB_OUTPUT"
+            echo "No CF_PAGES_DEPLOY_HOOK secret here; falling back to a rebuild commit."
+            exit 0
+          fi
+
+          sent=0
+          failed=0
+          while IFS= read -r hook; do
+            # A rotated or expired hook must not fail the job, or the empty-commit
+            # fallback below — the whole point of this workflow — would never run.
+            if curl --fail --show-error --silent -X POST "$hook" > /dev/null; then
+              sent=$((sent + 1))
+            else
+              failed=$((failed + 1))
+              echo "Deploy hook #$((sent + failed)) did not accept the request." >&2
+            fi
+          done < <(printf '%s\n' "$CF_PAGES_DEPLOY_HOOK" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+
+          if [ "$sent" -gt 0 ]; then
+            echo "used_hook=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "used_hook=false" >> "$GITHUB_OUTPUT"
+            echo "Every deploy hook failed; falling back to a rebuild commit." >&2
+          fi
+          echo "Deploy hooks accepted: ${sent}, failed: ${failed}."
+
+      - name: Trigger the rebuild with an empty commit
+        if: steps.decide.outputs.needed == 'true' && steps.hook.outputs.used_hook != 'true'
+        env:
+          UPSTREAM_TAG: ${{ steps.upstream.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # Bound the retries to roughly one rebuild commit per scheduled run
+          # instead of one per repeated trigger of the same release.
+          if git log --since='6 hours ago' --format='%B' | grep -qF "rebuild-for:${UPSTREAM_TAG}"; then
+            echo "A rebuild for ${UPSTREAM_TAG} was already requested recently; skipping."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit --allow-empty -m "chore: rebuild site for upstream ${UPSTREAM_TAG}
+
+          rebuild-for:${UPSTREAM_TAG}"
+          git push origin "HEAD:${PRODUCTION_BRANCH}"
+          echo "Pushed a rebuild commit for ${UPSTREAM_TAG}."

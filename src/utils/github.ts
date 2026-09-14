@@ -1,3 +1,5 @@
+import { readApkMirrorManifest } from './apkMirror';
+
 export interface ReleaseInfo {
   tagName: string;
   htmlUrl: string;
@@ -110,7 +112,29 @@ async function fetchGitHubRelease(): Promise<ReleaseInfo> {
   };
 }
 
+/**
+ * The APK this deployment mirrored at build time. Preferred over the live APIs:
+ * it is the same release they report, and it is already served from this origin.
+ */
+async function fetchMirroredRelease(): Promise<ReleaseInfo | null> {
+  const manifest = await readApkMirrorManifest();
+  if (!manifest?.apkPath) return null;
+
+  return {
+    tagName: manifest.tagName || withTagPrefix(manifest.versionName),
+    htmlUrl: manifest.releaseUrl || githubReleaseUrl,
+    // Relative first: a preview deployment then serves its own copy instead of
+    // pointing at the production origin recorded in the manifest.
+    apkUrl: manifest.apkPath || manifest.apkUrl || androidApkUrl,
+    apkSize: formatSize(manifest.size),
+    publishedAt: manifest.publishedAt || fallback.publishedAt,
+  };
+}
+
 export async function fetchLatestRelease(): Promise<ReleaseInfo> {
+  const mirrored = await fetchMirroredRelease();
+  if (mirrored) return mirrored;
+
   try {
     return await fetchBackendRelease();
   } catch (error) {
