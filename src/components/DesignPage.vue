@@ -1,5 +1,5 @@
 <template>
-  <main id="top" ref="pageRef" class="page">
+  <main id="top" class="page">
     <SiteHeader :is-home="false" active-page="design" />
 
     <!-- Hero Section -->
@@ -319,48 +319,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
 import SiteHeader from './SiteHeader.vue';
-
-const pageRef = ref<HTMLElement | null>(null);
-let revealObserver: IntersectionObserver | null = null;
-
-onMounted(() => {
-  const targets = Array.from(document.querySelectorAll<HTMLElement>('.reveal:not(.is-visible)'));
-  revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver?.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.12 },
-  );
-
-  targets.forEach((target, index) => {
-    target.style.setProperty('--delay', `${Math.min(index * 35, 180)}ms`);
-    revealObserver?.observe(target);
-  });
-});
-
-onUnmounted(() => {
-  revealObserver?.disconnect();
-});
 </script>
 
 <style scoped>
-.hero__tag {
-  display: inline-block;
-  color: var(--teal);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  margin-bottom: 18px;
-  text-transform: uppercase;
-}
-
 .section--design {
   padding: 96px 0;
 }
@@ -944,74 +906,6 @@ onUnmounted(() => {
   .node-box {
     padding: 7px 12px;
     font-size: 13px;
-  }
-}
-
-.final__cta-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 40px;
-  width: 100%;
-}
-
-.final__cta-group .primary-cta,
-.final__cta-group .secondary-cta {
-  min-width: 180px;
-  justify-content: center;
-}
-
-.final__cta-group .primary-cta {
-  margin-top: 0 !important;
-}
-
-/* Secondary CTA Styling that matches premium aesthetics */
-.secondary-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: 0 4px 12px rgba(20, 23, 31, 0.03);
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 20px;
-  padding: 13px 26px;
-  transition: transform 240ms var(--ease-out), background 240ms var(--ease-out), border-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out), color 240ms var(--ease-out);
-}
-
-.secondary-cta:hover {
-  border-color: var(--primary);
-  background: var(--paper);
-  color: var(--primary);
-  box-shadow: 0 6px 16px rgba(59, 98, 184, 0.1);
-  transform: translateY(-1px);
-}
-
-.secondary-cta:active {
-  transform: scale(0.98);
-}
-
-@media (max-width: 640px) {
-  .final__cta-group {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 24px;
-  }
-  
-  .final__cta-group .primary-cta,
-  .final__cta-group .secondary-cta {
-    width: 100%;
-    max-width: 304px;
-    min-width: 0;
   }
 }
 </style>

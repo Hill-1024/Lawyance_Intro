@@ -7,6 +7,13 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// Matches the extensionless internal links (`/design`, `/download`) so the
+// canonical never contradicts the site's own navigation.
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.site).href;
+
+const fontHref =
+  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap';
 ---
 
 <!doctype html>
@@ -14,20 +21,41 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f6f8fb" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lawver" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
-    />
+    <link rel="preload" as="style" href={fontHref} />
+    <link rel="stylesheet" href={fontHref} />
+
+    <script is:inline>
+      // Reveal animations hide content, so they only engage once this runs.
+      // Without JavaScript the stylesheet leaves everything visible.
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('reveal-ready');
+        window.setTimeout(function () {
+          if (root.dataset.revealReady !== 'true') {
+            root.classList.remove('reveal-ready');
+          }
+        }, 2000);
+      })();
+    </script>
 
     <title>{title}</title>
   </head>

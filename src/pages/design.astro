@@ -7,5 +7,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   title="系统架构与产品设计 | Lawver"
   description="Lawver 产品设计与系统架构：深入解构工具调用转发（MCPS）、智能体运行流水线（Plan-and-Solve / OCP）、多角色模拟法庭（FSM）与多路召回记忆系统。"
 >
-  <DesignPage client:load />
+  <!-- Rendered to static HTML on purpose: the page has no state, so hydrating it
+       would ship the Vue runtime for a scroll animation alone. -->
+  <DesignPage />
 </BaseLayout>
+
+<script>
+  import { setupScrollEffects } from '../utils/scrollEffects';
+
+  setupScrollEffects();
+</script>

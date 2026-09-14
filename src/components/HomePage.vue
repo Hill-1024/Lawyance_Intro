@@ -14,14 +14,14 @@
         </p>
         <div class="hero__action reveal is-visible" style="--delay: 360ms">
           <div class="hero__cta-group">
-            <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer" :aria-label="`进入 ${brandName} Web端`">
+            <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer">
               <span>进入 Web 工作台</span>
             </a>
-            <a :href="releaseInfo?.apkUrl || '/download'" class="secondary-cta" :aria-label="`下载 ${brandName} Android 应用`">
-              <span>下载 Android 应用 ({{ releaseInfo?.tagName || '最新版' }})</span>
+            <a :href="releaseInfo.apkUrl" class="secondary-cta">
+              <span>下载 Android 应用 ({{ releaseInfo.tagName }})</span>
             </a>
           </div>
-          <p class="hero__download-meta" v-if="releaseInfo">
+          <p class="hero__download-meta">
             最新版本: <span>{{ releaseInfo.tagName }}</span> • 大小: <span>{{ releaseInfo.apkSize }}</span> • 
             <a href="/download" class="meta-link">前往下载中心 &rarr;</a>
           </p>
@@ -187,8 +187,8 @@
       <h2 id="final-title" class="reveal">让法律咨询回到事实、条文与可验证的表达。</h2>
       <p class="reveal">{{ brandName }} 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
       <div class="final__cta-group reveal" style="--delay: 200ms">
-        <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer" :aria-label="`进入 ${brandName} Web端`">进入 Web 工作台</a>
-        <a :href="releaseInfo?.apkUrl || '/download'" class="secondary-cta">下载 Android 应用</a>
+        <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer">进入 Web 工作台</a>
+        <a :href="releaseInfo.apkUrl" class="secondary-cta">下载 Android 应用</a>
       </div>
     </section>
   </main>
@@ -198,17 +198,11 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import BrandLogo from './BrandLogo.vue';
 import SiteHeader from './SiteHeader.vue';
-
-interface ReleaseInfo {
-  tagName: string;
-  htmlUrl: string;
-  apkUrl: string;
-  apkSize: string;
-  publishedAt: string;
-}
+import type { ReleaseInfo } from '../utils/github';
+import { setupScrollEffects } from '../utils/scrollEffects';
 
 defineProps<{
-  releaseInfo?: ReleaseInfo;
+  releaseInfo: ReleaseInfo;
 }>();
 
 const pageRef = ref<HTMLElement | null>(null);
@@ -334,10 +328,9 @@ const memoryItems = [
   },
 ];
 
-let revealObserver: IntersectionObserver | null = null;
+let teardownScrollEffects: (() => void) | null = null;
 let scrollFrame = 0;
 let methodFrame = 0;
-let hashFrame = 0;
 let animationFrame = 0;
 let targetDarkProgress = 0;
 let renderedDarkProgress = 0;
@@ -452,50 +445,21 @@ const updateWorkflowStack = () => {
   });
 };
 
-const scrollToHashTarget = () => {
-  const id = window.location.hash.replace('#', '');
-
-  if (!id) {
-    return;
-  }
-
-  document.getElementById(id)?.scrollIntoView({ block: 'start' });
-};
-
 onMounted(() => {
-  const targets = Array.from(document.querySelectorAll<HTMLElement>('.reveal:not(.is-visible)'));
-  revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver?.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.18 },
-  );
-
-  targets.forEach((target, index) => {
-    target.style.setProperty('--delay', `${Math.min(index * 45, 220)}ms`);
-    revealObserver?.observe(target);
-  });
+  teardownScrollEffects = setupScrollEffects();
 
   updateAmbientBackground();
   updateWorkflowStack();
-  hashFrame = window.requestAnimationFrame(scrollToHashTarget);
   window.addEventListener('scroll', updateAmbientBackground, { passive: true });
   window.addEventListener('scroll', updateWorkflowStack, { passive: true });
-  window.addEventListener('hashchange', scrollToHashTarget);
   window.addEventListener('resize', updateAmbientBackground);
   window.addEventListener('resize', updateWorkflowStack);
 });
 
 onUnmounted(() => {
-  revealObserver?.disconnect();
+  teardownScrollEffects?.();
   window.removeEventListener('scroll', updateAmbientBackground);
   window.removeEventListener('scroll', updateWorkflowStack);
-  window.removeEventListener('hashchange', scrollToHashTarget);
   window.removeEventListener('resize', updateAmbientBackground);
   window.removeEventListener('resize', updateWorkflowStack);
 
@@ -507,10 +471,6 @@ onUnmounted(() => {
     window.cancelAnimationFrame(methodFrame);
   }
 
-  if (hashFrame) {
-    window.cancelAnimationFrame(hashFrame);
-  }
-
   if (animationFrame) {
     window.cancelAnimationFrame(animationFrame);
   }
@@ -518,7 +478,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.hero__cta-group, .final__cta-group {
+.hero__cta-group {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -548,47 +508,15 @@ onUnmounted(() => {
   text-decoration: underline;
 }
 
-/* Secondary CTA Styling that matches premium aesthetics */
-.secondary-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: 0 4px 12px rgba(20, 23, 31, 0.03);
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 20px;
-  padding: 13px 26px;
-  transition: transform 240ms var(--ease-out), background 240ms var(--ease-out), border-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out), color 240ms var(--ease-out);
-}
-
-.secondary-cta:hover {
-  border-color: var(--primary);
-  background: var(--paper);
-  color: var(--primary);
-  box-shadow: 0 6px 16px rgba(59, 98, 184, 0.1);
-  transform: translateY(-1px);
-}
-
-.secondary-cta:active {
-  transform: scale(0.98);
-}
-
 @media (max-width: 640px) {
-  .hero__cta-group, .final__cta-group {
+  .hero__cta-group {
     flex-direction: column;
     align-items: center;
     width: 100%;
   }
-  
-  .primary-cta, .secondary-cta {
+
+  .hero__cta-group .primary-cta,
+  .hero__cta-group .secondary-cta {
     width: 100%;
     max-width: 304px;
   }
