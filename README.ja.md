@@ -14,11 +14,13 @@ Lawver Intro は、Lawver の独立した製品紹介サイトです。Astro と
 - **作業方式**: デフォルト相談、Plan-and-Solve、OCP 出力レビュー。
 - **注意力と記憶**: 現在の文脈、会話単位の記憶、法廷ロール記憶の境界。
 - **信頼と境界**: ブラウザ優先の永続化、ワークスペース隔離、認証・監査、慎重な法的表現。
+- **製品設計**: 全体トポロジーと MCPS ツールゲートウェイ、二系統のオーケストレーションと OCP レビュー、模擬法廷 FSM、多経路の記憶リコール、サンドボックス境界。
+- **ダウンロードセンター**: Web 版の入口と Android クライアント。ビルド時に解決したバージョン、容量、公開日を表示します。
 
 ## 技術スタック
 
-- Astro 5 静的サイト。
-- Vue 3 コンポーネント。
+- Astro 6 静的サイト。
+- Vue 3 コンポーネント。スクロール操作が必要なホームページのみハイドレートし、製品設計ページとダウンロードセンターはビルド時に純粋な静的 HTML として描画され、フレームワークのランタイムを配信しません。
 - TypeScript。
 - カスタム CSS と Lawver ブランドビジュアル。
 
@@ -51,29 +53,49 @@ pnpm preview
 .
 ├── astro.config.mjs
 ├── public/
+│   ├── _headers
 │   └── favicon.svg
 └── src/
     ├── components/
     │   ├── BrandLogo.vue
-    │   └── HomePage.vue
+    │   ├── DesignPage.vue
+    │   ├── DownloadPage.vue
+    │   ├── HomePage.vue
+    │   └── SiteHeader.vue
+    ├── layouts/
+    │   └── BaseLayout.astro
     ├── pages/
+    │   ├── design.astro
+    │   ├── download.astro
     │   └── index.astro
-    └── styles/
-        └── global.css
+    ├── styles/
+    │   └── global.css
+    └── utils/
+        ├── github.ts
+        └── scrollEffects.ts
 ```
 
 | Path | 説明 |
 | --- | --- |
-| `src/components/HomePage.vue` | 紹介ページ本体、スクロール操作、各セクションの文言 |
+| `src/components/HomePage.vue` | ホームページ本体、スクロール操作、各セクションの文言。唯一ハイドレートする Vue アイランド |
+| `src/components/DesignPage.vue` | 製品設計・システム構成ページの内容。クライアント状態なし |
+| `src/components/DownloadPage.vue` | ダウンロードセンターの内容とビルド時に解決したリリース情報 |
+| `src/components/SiteHeader.vue` | 固定トップナビ、現在ページのハイライト、モバイル向けフォールバック |
 | `src/components/BrandLogo.vue` | Lawver ブランドマークコンポーネント |
-| `src/styles/global.css` | レイアウト、レスポンシブスタイル、モーション |
-| `src/pages/index.astro` | Astro ページ入口 |
+| `src/layouts/BaseLayout.astro` | HTML シェル、フォント、メタ情報、リビール用ブートスクリプト |
+| `src/utils/github.ts` | 最新 Android リリースをビルド時に取得し、段階的にフォールバック |
+| `src/utils/scrollEffects.ts` | 3 ページ共通のスクロールリビールとアンカー移動のプログレッシブエンハンスメント |
+| `src/styles/global.css` | レイアウト、共通コンポーネントスタイル、レスポンシブスタイル、モーション |
+| `src/pages/*.astro` | 3 つのページ入口 |
 
 ## メンテナンス方針
 
 - 文言は機能の羅列ではなく、製品理解を助けるために書きます。
 - ブランド、色、タイポグラフィは Lawver メインアプリと揃えます。
-- ページは静的で高速、デプロイしやすい状態を保ち、不要なクライアント状態を追加しません。
+- ページは静的で高速、デプロイしやすい状態を保ち、不要なクライアント状態を追加しません。`client:load` はスクロール状態が本当に必要なホームページだけに使います。
+- スクロールリビールはプログレッシブエンハンスメントです。非表示スタイルは `BaseLayout.astro` のブートスクリプト実行後にのみ有効になるため、JavaScript が無効・失敗しても内容は読めます。
+- ページ間で共有するスタイル（ボタン、CTA グループ、セクションラベル）は `global.css` に置き、各ページの `<style scoped>` に複製しません。
+- サイトのドメインは `astro.config.mjs` の `site` で設定し、canonical と `og:url` はそこから生成されます。ドメイン変更時はここも更新してください。
 - CTA リンクは正式な Lawver サービスへ向けています。ドメイン変更時はこのページも確認してください。
 
 ## ライセンス
