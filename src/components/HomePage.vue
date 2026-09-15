@@ -1,5 +1,5 @@
 <template>
-  <main id="top" ref="pageRef" class="page">
+  <main id="top" class="page">
     <SiteHeader :is-home="true" active-page="home" />
 
     <section class="hero hero--display" aria-labelledby="hero-title">
@@ -196,12 +196,12 @@ import BrandLogo from './BrandLogo.vue';
 import SiteHeader from './SiteHeader.vue';
 import type { ReleaseInfo } from '../utils/github';
 import { setupScrollEffects } from '../utils/scrollEffects';
+import { setupAmbientBackground } from '../utils/ambientBackground';
 
 defineProps<{
   releaseInfo: ReleaseInfo;
 }>();
 
-const pageRef = ref<HTMLElement | null>(null);
 const trustRef = ref<HTMLElement | null>(null);
 const methodRef = ref<HTMLElement | null>(null);
 const activeWorkflowIndex = ref(0);
@@ -325,95 +325,10 @@ const memoryItems = [
 ];
 
 let teardownScrollEffects: (() => void) | null = null;
-let scrollFrame = 0;
+let teardownAmbientBackground: (() => void) | null = null;
 let methodFrame = 0;
-let animationFrame = 0;
-let targetDarkProgress = 0;
-let renderedDarkProgress = 0;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
-
-const smoothstep = (value: number, start: number, end: number) => {
-  const t = clamp((value - start) / (end - start));
-  return t * t * (3 - 2 * t);
-};
-
-const mix = (from: number, to: number, progress: number) => from + (to - from) * progress;
-
-const paintAmbientBackground = (progress: number) => {
-  const page = pageRef.value;
-
-  if (!page) {
-    return;
-  }
-
-  const eased = smoothstep(progress, 0, 1);
-  const light = [246, 248, 251];
-  const dark = [11, 13, 20];
-
-  page.style.setProperty('--ambient-progress', eased.toFixed(4));
-  page.style.setProperty('--ambient-r', mix(light[0], dark[0], eased).toFixed(2));
-  page.style.setProperty('--ambient-g', mix(light[1], dark[1], eased).toFixed(2));
-  page.style.setProperty('--ambient-b', mix(light[2], dark[2], eased).toFixed(2));
-  page.style.setProperty('--ambient-light-wash', (0.88 * (1 - eased)).toFixed(4));
-  page.style.setProperty('--ambient-dark-wash', (0.2 + 0.46 * eased).toFixed(4));
-};
-
-const measureDarkProgress = () => {
-  const trust = trustRef.value;
-
-  if (!trust) {
-    return 0;
-  }
-
-  const rect = trust.getBoundingClientRect();
-  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-  const visibleHeight = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0));
-  const maxVisibleHeight = Math.max(1, Math.min(rect.height, viewportHeight));
-  const visibleCoverage = visibleHeight / maxVisibleHeight;
-
-  return smoothstep(visibleCoverage, 0.08, 0.88);
-};
-
-const animateAmbientBackground = () => {
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isDarkening = targetDarkProgress > renderedDarkProgress;
-  const velocity = reducedMotion ? 1 : isDarkening ? 0.42 : 0.3;
-
-  if (targetDarkProgress >= 0.999 || targetDarkProgress <= 0.001) {
-    renderedDarkProgress = targetDarkProgress;
-    paintAmbientBackground(renderedDarkProgress);
-    animationFrame = 0;
-    return;
-  }
-
-  renderedDarkProgress += (targetDarkProgress - renderedDarkProgress) * velocity;
-
-  if (Math.abs(targetDarkProgress - renderedDarkProgress) < 0.001) {
-    renderedDarkProgress = targetDarkProgress;
-    paintAmbientBackground(renderedDarkProgress);
-    animationFrame = 0;
-    return;
-  }
-
-  paintAmbientBackground(renderedDarkProgress);
-  animationFrame = window.requestAnimationFrame(animateAmbientBackground);
-};
-
-const updateAmbientBackground = () => {
-  if (scrollFrame) {
-    return;
-  }
-
-  scrollFrame = window.requestAnimationFrame(() => {
-    scrollFrame = 0;
-    targetDarkProgress = measureDarkProgress();
-
-    if (!animationFrame) {
-      animationFrame = window.requestAnimationFrame(animateAmbientBackground);
-    }
-  });
-};
 
 const measureWorkflowIndex = () => {
   const method = methodRef.value;
@@ -443,32 +358,21 @@ const updateWorkflowStack = () => {
 
 onMounted(() => {
   teardownScrollEffects = setupScrollEffects();
+  teardownAmbientBackground = setupAmbientBackground(trustRef.value);
 
-  updateAmbientBackground();
   updateWorkflowStack();
-  window.addEventListener('scroll', updateAmbientBackground, { passive: true });
   window.addEventListener('scroll', updateWorkflowStack, { passive: true });
-  window.addEventListener('resize', updateAmbientBackground);
   window.addEventListener('resize', updateWorkflowStack);
 });
 
 onUnmounted(() => {
   teardownScrollEffects?.();
-  window.removeEventListener('scroll', updateAmbientBackground);
+  teardownAmbientBackground?.();
   window.removeEventListener('scroll', updateWorkflowStack);
-  window.removeEventListener('resize', updateAmbientBackground);
   window.removeEventListener('resize', updateWorkflowStack);
-
-  if (scrollFrame) {
-    window.cancelAnimationFrame(scrollFrame);
-  }
 
   if (methodFrame) {
     window.cancelAnimationFrame(methodFrame);
-  }
-
-  if (animationFrame) {
-    window.cancelAnimationFrame(animationFrame);
   }
 });
 </script>

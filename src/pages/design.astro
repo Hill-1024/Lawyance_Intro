@@ -16,6 +16,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <script>
   import { setupScrollEffects } from '../utils/scrollEffects';
+  import { setupAmbientBackground } from '../utils/ambientBackground';
 
   setupScrollEffects();
+
+  // Same scroll-driven background the home page runs off its trust section: the
+  // page darkens as the sandbox band fills the viewport, so the band dissolves
+  // into the page instead of being pasted onto it.
+  setupAmbientBackground(document.querySelector('#security'));
 </script>

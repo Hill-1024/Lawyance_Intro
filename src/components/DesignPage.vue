@@ -278,41 +278,45 @@
       </div>
     </section>
 
-    <!-- Component 5: Sandbox & Security -->
-    <section id="security" class="section section--design band--dark" aria-labelledby="sec-title">
-      <div class="section__heading reveal">
-        <p>05 / 沙箱边界与系统安全</p>
-        <h2 id="sec-title">事实先于承诺，数据逻辑物理强隔离。</h2>
-      </div>
+    <!-- Component 5: Sandbox & Security. The dark band wraps the column instead of
+         being the column, so its fade spans the viewport rather than stopping at
+         the 1180px content width. -->
+    <section id="security" class="band--dark" aria-labelledby="sec-title">
+      <div class="section section--design">
+        <div class="section__heading reveal">
+          <p>05 / 沙箱边界与系统安全</p>
+          <h2 id="sec-title">事实先于承诺，数据逻辑物理强隔离。</h2>
+        </div>
 
-      <div class="design-content reveal">
-        <p class="section-lead-paragraph">
-          我们秉持「安全边界先于产品承诺」的原则，为涉案敏感材料、上传文件与代码执行环境构筑了严密的底层护城河。
-        </p>
+        <div class="design-content reveal">
+          <p class="section-lead-paragraph">
+            我们秉持「安全边界先于产品承诺」的原则，为涉案敏感材料、上传文件与代码执行环境构筑了严密的底层护城河。
+          </p>
 
-        <div class="security-features">
-          <div class="sec-card">
-            <div class="sec-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
+          <div class="security-features">
+            <div class="sec-card">
+              <div class="sec-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h4>工作区物理强隔离</h4>
+              <p>所有上传的文件卷宗和生成的报告文书，严格按照用户 ID 及会话 Session ID 隔离存放在 <code>TEMP</code> 与 <code>Result</code> 文件夹中。通过 <code>workspace.py</code> 校验核心读写路径，从根本上防止跨会话的目录遍历漏洞（Path Traversal）。</p>
             </div>
-            <h4>工作区物理强隔离</h4>
-            <p>所有上传的文件卷宗和生成的报告文书，严格按照用户 ID 及会话 Session ID 隔离存放在 <code>TEMP</code> 与 <code>Result</code> 文件夹中。通过 <code>workspace.py</code> 校验核心读写路径，从根本上防止跨会话的目录遍历漏洞（Path Traversal）。</p>
-          </div>
 
-          <div class="sec-card">
-            <div class="sec-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-                <line x1="12" y1="22" x2="12" y2="15.5" />
-                <line x1="12" y1="15.5" x2="22" y2="8.5" />
-                <line x1="12" y1="15.5" x2="2" y2="8.5" />
-              </svg>
+            <div class="sec-card">
+              <div class="sec-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                  <line x1="12" y1="22" x2="12" y2="15.5" />
+                  <line x1="12" y1="15.5" x2="22" y2="8.5" />
+                  <line x1="12" y1="15.5" x2="2" y2="8.5" />
+                </svg>
+              </div>
+              <h4>可信源控制与输入审查</h4>
+              <p>联网检索工具 SearXNG 及网页文本阅读器对抓取内容做只读与「不可信」标记，禁止对抓取的内容进行代码级运行与指令执行。同时对外部 REST 接口启用 CORS 回环验证和 IP 限流保护。</p>
             </div>
-            <h4>可信源控制与输入审查</h4>
-            <p>联网检索工具 SearXNG 及网页文本阅读器对抓取内容做只读与「不可信」标记，禁止对抓取的内容进行代码级运行与指令执行。同时对外部 REST 接口启用 CORS 回环验证和 IP 限流保护。</p>
           </div>
         </div>
       </div>

@@ -784,19 +784,11 @@ code {
   line-height: 27px;
 }
 
+/* The band gradient lives on the shared `.trust, .band--dark` rule so the home
+   and design bands cannot drift apart. */
 .trust {
   position: relative;
   color: white;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(11, 13, 20, 0) 0%,
-      rgba(11, 13, 20, var(--ambient-dark-wash)) 18%,
-      rgba(11, 13, 20, 0.98) 32%,
-      rgba(11, 13, 20, 0.98) 72%,
-      rgba(11, 13, 20, var(--ambient-dark-wash)) 88%,
-      rgba(11, 13, 20, 0) 100%
-    );
 }
 
 .trust__inner {
@@ -1103,19 +1095,35 @@ html.reveal-ready .reveal:not(.is-visible) {
 /*
  * Dark band. The home page closes its narrative on the dark trust section; the
  * design page reuses the same device once so a long light column gets a second
- * accent. The transparent edges let the paper show through, so the band reads
- * as a band rather than a pasted-on block.
+ * accent. Both bands share this gradient so they read identically.
+ *
+ * The edges are transparent so the paper shows through and the band reads as a
+ * band rather than a pasted-on block. The ramp is a percentage of the band
+ * because that is what gives it its length — the home band ramps over 226px of
+ * its 705px at desktop and over 422px of 1318px on a phone, so its edges stay
+ * equally soft at every size. A fixed ramp would read as a hard edge on the
+ * short desktop band. The outer stop tracks `--ambient-dark-wash`, which the
+ * scroll-driven page background raises as the band fills the viewport, so the
+ * band's edge and the darkening page rise together and never show a seam.
  */
+.trust,
 .band--dark {
   position: relative;
-  color: #aeb5c5;
   background: linear-gradient(
     180deg,
     rgba(11, 13, 20, 0) 0%,
-    rgba(11, 13, 20, 0.98) 14%,
-    rgba(11, 13, 20, 0.98) 86%,
+    rgba(11, 13, 20, var(--ambient-dark-wash)) 18%,
+    rgba(11, 13, 20, 0.98) 32%,
+    rgba(11, 13, 20, 0.98) 72%,
+    rgba(11, 13, 20, var(--ambient-dark-wash)) 88%,
     rgba(11, 13, 20, 0) 100%
   );
+}
+
+/* The design band is a plain full-bleed wrapper around the width-constrained
+   column, so its fade spans the viewport instead of stopping at 1180px. */
+.band--dark {
+  color: #aeb5c5;
 }
 
 .band--dark h2,
