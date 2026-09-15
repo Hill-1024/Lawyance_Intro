@@ -10,13 +10,19 @@
         <p class="hero__lead reveal is-visible" style="--delay: 240ms">
           体验 Lawver 法律 AI 工作台的全部潜力。支持网页版直接访问及原生 Android 客户端下载。
         </p>
+        <dl class="hero-facts reveal is-visible" style="--delay: 320ms">
+          <div v-for="fact in releaseFacts" :key="fact.label">
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.value }}</dd>
+          </div>
+        </dl>
       </div>
     </section>
 
     <!-- Download Options Section -->
     <section class="section section--download" aria-labelledby="options-title">
       <div class="section__heading reveal">
-        <p>01 / 客户端下载与访问</p>
+        <p>客户端下载与访问</p>
         <h2 id="options-title">多端联动，即刻开启法律工作流程。</h2>
       </div>
 
@@ -37,9 +43,7 @@
               <a href="https://law.mutsumi.moe" target="_blank" rel="noopener noreferrer" class="primary-cta">
                 立即进入 Web 端
               </a>
-              <div class="card-meta">
-                <span>推荐使用 Chrome / Safari / Edge 获得最佳体验</span>
-              </div>
+              <p class="card-meta">推荐 Chrome / Safari / Edge 桌面浏览器</p>
             </div>
           </div>
 
@@ -63,9 +67,7 @@
                   <span>查看 GitHub Release</span>
                 </a>
               </div>
-              <div class="card-meta">
-                <span>{{ releaseMeta }}</span>
-              </div>
+              <p class="card-meta">侧载安装，首次安装需在系统设置中允许未知来源。</p>
             </div>
           </div>
         </div>
@@ -103,11 +105,12 @@ const formatDate = (isoString: string) => {
 
 const publishedLabel = formatDate(props.releaseInfo.publishedAt);
 
-const releaseMeta = [
-  `最新版本: ${props.releaseInfo.tagName}`,
-  `大小: ${props.releaseInfo.apkSize}`,
-  publishedLabel ? `发布时间: ${publishedLabel}` : '',
-].filter(Boolean).join(' • ');
+const releaseFacts = [
+  { label: '最新版本', value: props.releaseInfo.tagName },
+  { label: '安装包大小', value: props.releaseInfo.apkSize },
+  { label: '发布时间', value: publishedLabel || '以 Release 页为准' },
+  { label: '支持平台', value: 'Web / Android' },
+];
 </script>
 
 <style scoped>
@@ -126,14 +129,14 @@ const releaseMeta = [
 }
 
 .download-card {
-  background: var(--surface);
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-content: start;
+  min-height: 440px;
   border: 1px solid var(--line-soft);
   border-radius: 12px;
+  background: var(--surface);
   padding: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-height: 440px;
   transition: border-color 240ms var(--ease-out);
 }
 
@@ -166,16 +169,14 @@ const releaseMeta = [
   color: var(--ink);
 }
 
-.download-card p {
+.download-card > p {
+  margin: 0 0 24px;
+  color: var(--muted);
   font-size: 15px;
   line-height: 27px;
-  color: var(--muted);
-  margin: 0 0 24px;
-  flex-grow: 1;
 }
 
 .download-action-group {
-  margin-top: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -205,11 +206,11 @@ const releaseMeta = [
 }
 
 .card-meta {
-  font-size: 12.5px;
+  margin: 0;
   color: var(--quiet);
+  font-size: 12.5px;
   font-weight: 500;
-  line-height: 1.6;
-  margin-top: 2px;
+  line-height: 20px;
 }
 
 .download-final {

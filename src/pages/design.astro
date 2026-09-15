@@ -1,5 +1,6 @@
 ---
 import DesignPage from '../components/DesignPage.vue';
+import SiteFooter from '../components/SiteFooter.vue';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
@@ -10,6 +11,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <!-- Rendered to static HTML on purpose: the page has no state, so hydrating it
        would ship the Vue runtime for a scroll animation alone. -->
   <DesignPage />
+  <SiteFooter />
 </BaseLayout>
 
 <script>

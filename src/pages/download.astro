@@ -1,5 +1,6 @@
 ---
 import DownloadPage from '../components/DownloadPage.vue';
+import SiteFooter from '../components/SiteFooter.vue';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { fetchLatestRelease } from '../utils/github';
 
@@ -13,6 +14,7 @@ const releaseInfo = await fetchLatestRelease();
   <!-- Rendered to static HTML on purpose: release metadata is resolved at build
        time, so hydrating the page would ship the Vue runtime for nothing. -->
   <DownloadPage releaseInfo={releaseInfo} />
+  <SiteFooter />
 </BaseLayout>
 
 <script>

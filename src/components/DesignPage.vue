@@ -10,6 +10,13 @@
         <p class="hero__lead reveal is-visible" style="--delay: 240ms">
           Lawver 绝非不可追溯结论的「黑盒对话框」，而是一套将法律推理、分步规划、独立记忆、隔离沙箱与输出校验收束在同一物理边界内的专业级工作台。
         </p>
+        <nav class="hero-index reveal is-visible" style="--delay: 320ms" aria-label="本页章节">
+          <a href="#topology"><span>01</span>整体拓扑</a>
+          <a href="#pipeline"><span>02</span>编排管线</a>
+          <a href="#court"><span>03</span>模拟法庭</a>
+          <a href="#memory"><span>04</span>记忆系统</a>
+          <a href="#security"><span>05</span>沙箱边界</a>
+        </nav>
       </div>
     </section>
 
@@ -26,56 +33,66 @@
         </p>
 
         <!-- Premium Architecture Diagram -->
-        <div class="topo-diagram reveal">
-          <div class="topo-layer topo-layer--frontend">
-            <span class="layer-title">UI 展现层 (React 19 / Tailwind / Capacitor)</span>
-            <div class="layer-nodes">
-              <div class="node-box">主聊天工作台</div>
-              <div class="node-box">模拟法庭控制</div>
-              <div class="node-box">文件沙箱管理器</div>
+        <div class="topo-stack reveal">
+          <article class="topo-row">
+            <div class="topo-row__head">
+              <span>01</span>
+              <h4>UI 展现层</h4>
+              <p>React 19 / Tailwind / Capacitor</p>
             </div>
-          </div>
-          
-          <div class="topo-connector">
-            <span>REST API / SSE Streams / File Transfer</span>
-          </div>
-
-          <div class="topo-layer topo-layer--gateway">
-            <span class="layer-title">应用服务层 (FastAPI Application & App Factory)</span>
-            <div class="layer-nodes">
-              <div class="node-box">会话生命周期</div>
-              <div class="node-box">记忆同步引擎</div>
-              <div class="node-box">OCP 格式审查器</div>
+            <div class="topo-row__nodes">
+              <span class="node-chip">主聊天工作台</span>
+              <span class="node-chip">模拟法庭控制</span>
+              <span class="node-chip">文件沙箱管理器</span>
             </div>
-          </div>
+          </article>
 
-          <div class="topo-connector">
-            <span>Agent 任务分发 (Orchestrator)</span>
-          </div>
+          <p class="topo-connector">REST API / SSE Streams / File Transfer</p>
 
-          <div class="topo-layer topo-layer--mcp">
-            <span class="layer-title">统一工具转发层 (MCPS Core Protocol)</span>
-            <div class="layer-nodes">
-              <div class="node-box node-box--highlight">agent (主问答)</div>
-              <div class="node-box node-box--highlight">court (庭审专属)</div>
-              <div class="node-box node-box--highlight">ocp_reviewer (审查)</div>
-              <div class="node-box node-box--highlight">internal (内部调用)</div>
+          <article class="topo-row">
+            <div class="topo-row__head">
+              <span>02</span>
+              <h4>应用服务层</h4>
+              <p>FastAPI Application &amp; App Factory</p>
             </div>
-          </div>
-
-          <div class="topo-connector">
-            <span>底层协议适配器 (MCP Client Adapters)</span>
-          </div>
-
-          <div class="topo-layer topo-layer--infra">
-            <span class="layer-title">底层引擎与信源 (Local / Remote Engine Services)</span>
-            <div class="layer-nodes">
-              <div class="node-box">法库 RAG</div>
-              <div class="node-box">SearXNG 联网</div>
-              <div class="node-box">企业工商查询</div>
-              <div class="node-box">文档批注处理器</div>
+            <div class="topo-row__nodes">
+              <span class="node-chip">会话生命周期</span>
+              <span class="node-chip">记忆同步引擎</span>
+              <span class="node-chip">OCP 格式审查器</span>
             </div>
-          </div>
+          </article>
+
+          <p class="topo-connector">Agent 任务分发（Orchestrator）</p>
+
+          <article class="topo-row topo-row--accent">
+            <div class="topo-row__head">
+              <span>03</span>
+              <h4>统一工具转发层</h4>
+              <p>MCPS Core Protocol</p>
+            </div>
+            <div class="topo-row__nodes">
+              <span class="node-chip">agent（主问答）</span>
+              <span class="node-chip">court（庭审专属）</span>
+              <span class="node-chip">ocp_reviewer（审查）</span>
+              <span class="node-chip">internal（内部调用）</span>
+            </div>
+          </article>
+
+          <p class="topo-connector">底层协议适配器（MCP Client Adapters）</p>
+
+          <article class="topo-row">
+            <div class="topo-row__head">
+              <span>04</span>
+              <h4>底层引擎与信源</h4>
+              <p>Local / Remote Engine Services</p>
+            </div>
+            <div class="topo-row__nodes">
+              <span class="node-chip">法库 RAG</span>
+              <span class="node-chip">SearXNG 联网</span>
+              <span class="node-chip">企业工商查询</span>
+              <span class="node-chip">文档批注处理器</span>
+            </div>
+          </article>
         </div>
 
         <div class="features-grid">
@@ -166,18 +183,13 @@
         <!-- FSM Stage visualization -->
         <div class="fsm-visual reveal">
           <h4>庭审有限状态机流程 (FSM States)</h4>
-          <div class="fsm-timeline">
-            <span class="fsm-node">开庭准备</span>
-            <span class="fsm-arrow">&rarr;</span>
-            <span class="fsm-node">诉辩陈述</span>
-            <span class="fsm-arrow">&rarr;</span>
-            <span class="fsm-node">法庭调查</span>
-            <span class="fsm-arrow">&rarr;</span>
-            <span class="fsm-node">举证质证</span>
-            <span class="fsm-arrow">&rarr;</span>
-            <span class="fsm-node">法庭辩论</span>
-            <span class="fsm-arrow">&rarr;</span>
-            <span class="fsm-node">庭审复盘</span>
+          <div class="fsm-rail">
+            <div class="fsm-stage"><span>01</span><strong>开庭准备</strong></div>
+            <div class="fsm-stage"><span>02</span><strong>诉辩陈述</strong></div>
+            <div class="fsm-stage"><span>03</span><strong>法庭调查</strong></div>
+            <div class="fsm-stage"><span>04</span><strong>举证质证</strong></div>
+            <div class="fsm-stage"><span>05</span><strong>法庭辩论</strong></div>
+            <div class="fsm-stage"><span>06</span><strong>庭审复盘</strong></div>
           </div>
           <p class="fsm-meta">支持 <strong>民事、行政、刑事</strong> 三类基础案由状态流转，各阶段拥有明确的进入和退出条件。</p>
         </div>
@@ -267,7 +279,7 @@
     </section>
 
     <!-- Component 5: Sandbox & Security -->
-    <section id="security" class="section section--design" aria-labelledby="sec-title">
+    <section id="security" class="section section--design band--dark" aria-labelledby="sec-title">
       <div class="section__heading reveal">
         <p>05 / 沙箱边界与系统安全</p>
         <h2 id="sec-title">事实先于承诺，数据逻辑物理强隔离。</h2>
@@ -343,94 +355,109 @@ import SiteHeader from './SiteHeader.vue';
   margin-bottom: 56px;
 }
 
-/* Topology Diagram styling */
-.topo-diagram {
-  background: transparent;
-  border: 1px solid var(--line-soft);
-  border-radius: 14px;
-  padding: 36px 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+/* Topology: one row per layer instead of nested bordered boxes, so the stack
+   reads as a spec table and the gateway layer can carry the accent. */
+.topo-stack {
+  display: grid;
   margin-bottom: 48px;
 }
 
-.topo-layer {
-  width: 100%;
-  max-width: 860px;
-  background: var(--surface);
-  border: 1px solid var(--line-soft);
-  border-radius: 8px;
-  padding: 20px 22px;
-  text-align: center;
+.topo-row {
+  display: grid;
+  grid-template-columns: minmax(0, 232px) minmax(0, 1fr);
+  gap: 20px 40px;
+  align-items: center;
+  border-top: 1px solid var(--line-soft);
+  padding: 26px 0 26px 22px;
 }
 
-.topo-layer--mcp {
-  background: linear-gradient(180deg, rgba(59, 98, 184, 0.04), rgba(59, 98, 184, 0.015));
-  border-color: rgba(59, 98, 184, 0.16);
+.topo-row--accent {
+  position: relative;
+  border-top-color: rgba(59, 98, 184, 0.22);
+  border-bottom: 1px solid rgba(59, 98, 184, 0.22);
+  background: linear-gradient(90deg, rgba(59, 98, 184, 0.07), rgba(59, 98, 184, 0));
 }
 
-.layer-title {
+.topo-row--accent::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--primary);
+  content: "";
+}
+
+.topo-row__head span {
   display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--quiet);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 14px;
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1;
 }
 
-.layer-nodes {
+.topo-row__head h4 {
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.topo-row__head p {
+  margin: 6px 0 0;
+  color: var(--quiet);
+  font-size: 12.5px;
+  line-height: 20px;
+}
+
+.topo-row__nodes {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.node-box {
-  background: var(--paper);
+.node-chip {
   border: 1px solid var(--line-soft);
   border-radius: 6px;
-  padding: 8px 14px;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--ink);
-  transition: border-color 200ms var(--ease-out), color 200ms var(--ease-out);
-}
-
-.node-box:hover {
-  border-color: rgba(20, 23, 31, 0.18);
-}
-
-.node-box--highlight {
   background: var(--surface);
-  border-color: rgba(59, 98, 184, 0.24);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px 14px;
+}
+
+.topo-row--accent .node-chip {
+  border-color: rgba(59, 98, 184, 0.2);
   color: var(--primary-dark);
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 15px;
 }
 
+/* The connector rides in the head gutter so the vertical hairline lands on the
+   same x as the layer titles above and below it. */
 .topo-connector {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 232px) minmax(0, 1fr);
+  gap: 40px;
   align-items: center;
+  margin: 0;
   color: var(--quiet);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
+  line-height: 18px;
   text-transform: uppercase;
-  padding: 2px 0;
+  padding-left: 22px;
 }
 
-.topo-connector::before, .topo-connector::after {
-  content: "";
-  display: block;
+.topo-connector::before {
+  justify-self: end;
   width: 1px;
-  height: 10px;
-  background: var(--line);
-  margin: 3px 0;
+  height: 30px;
+  background: linear-gradient(180deg, var(--line-soft), rgba(20, 23, 31, 0.26), var(--line-soft));
+  content: "";
 }
 
 /* Feature grid */
@@ -605,13 +632,8 @@ import SiteHeader from './SiteHeader.vue';
   color: var(--muted);
 }
 
-/* FSM Timeline */
+/* FSM Stage rail */
 .fsm-visual {
-  background: transparent;
-  border: 1px solid var(--line-soft);
-  border-radius: 14px;
-  padding: 36px 28px 30px;
-  text-align: center;
   margin-bottom: 56px;
 }
 
@@ -620,39 +642,49 @@ import SiteHeader from './SiteHeader.vue';
   font-size: 16px;
   font-style: italic;
   font-weight: 500;
-  margin: 0 0 28px;
+  margin: 0 0 24px;
   color: var(--teal);
   letter-spacing: 0.02em;
 }
 
-.fsm-timeline {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
+.fsm-rail {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.fsm-node {
-  background: var(--surface);
-  border: 1px solid var(--line-soft);
-  border-radius: 6px;
-  padding: 9px 16px;
-  font-size: 13.5px;
-  font-weight: 500;
+.fsm-stage {
+  border-left: 1px solid var(--line-soft);
+  padding: 24px 20px 26px;
+}
+
+.fsm-stage:first-child {
+  border-left: none;
+}
+
+.fsm-stage span {
+  display: block;
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1;
+}
+
+.fsm-stage strong {
+  display: block;
+  margin-top: 28px;
   color: var(--ink);
-}
-
-.fsm-arrow {
-  color: var(--quiet);
-  font-weight: 400;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
 }
 
 .fsm-meta {
-  margin: 0;
+  margin: 22px 0 0;
   font-size: 13.5px;
+  line-height: 24px;
   color: var(--quiet);
 }
 
@@ -825,6 +857,27 @@ import SiteHeader from './SiteHeader.vue';
   padding: 32px;
 }
 
+/* The security section is the page's single dark band. */
+.band--dark .section-lead-paragraph,
+.band--dark .sec-card p {
+  color: #aeb5c5;
+}
+
+/* `.sec-card h4` is scoped and outranks the global `.band--dark h4` rule, so the
+   card titles need an explicit light value here. */
+.band--dark .sec-card h4 {
+  color: #f3f5f9;
+}
+
+.band--dark .sec-card {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.band--dark .sec-icon {
+  color: #8ecdc7;
+}
+
 .sec-icon {
   width: 36px;
   height: 36px;
@@ -875,6 +928,34 @@ import SiteHeader from './SiteHeader.vue';
   .channel-card:nth-child(2n) {
     border-right: none;
   }
+
+  .topo-row {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .topo-connector {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .topo-connector::before {
+    justify-self: start;
+    width: 34px;
+    height: 1px;
+  }
+
+  .fsm-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fsm-stage:nth-child(3n + 1) {
+    border-left: none;
+  }
+
+  .fsm-stage:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--line-soft);
+  }
 }
 
 @media (max-width: 640px) {
@@ -899,13 +980,36 @@ import SiteHeader from './SiteHeader.vue';
     padding: 28px 22px;
   }
 
-  .topo-diagram {
-    padding: 24px 14px;
+  .topo-row {
+    padding: 22px 0 22px 16px;
   }
 
-  .node-box {
+  .topo-connector {
+    padding-left: 16px;
+  }
+
+  .node-chip {
+    font-size: 12.5px;
     padding: 7px 12px;
-    font-size: 13px;
+  }
+
+  .fsm-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .fsm-stage {
+    border-top: 1px solid var(--line-soft);
+    border-bottom: none;
+    border-left: none;
+    padding: 20px 0 22px;
+  }
+
+  .fsm-stage:first-child {
+    border-top: none;
+  }
+
+  .fsm-stage strong {
+    margin-top: 16px;
   }
 }
 </style>

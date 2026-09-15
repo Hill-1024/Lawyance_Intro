@@ -21,10 +21,6 @@
               <span>下载 Android 应用 ({{ releaseInfo.tagName }})</span>
             </a>
           </div>
-          <p class="hero__download-meta">
-            最新版本: <span>{{ releaseInfo.tagName }}</span> • 大小: <span>{{ releaseInfo.apkSize }}</span> • 
-            <a href="/download" class="meta-link">前往下载中心 &rarr;</a>
-          </p>
         </div>
       </div>
 
@@ -484,28 +480,6 @@ onUnmounted(() => {
   gap: 16px;
   justify-content: center;
   margin-top: 34px;
-}
-
-.hero__download-meta {
-  margin: 12px 0 0 !important;
-  color: var(--quiet);
-  font-size: 13px !important;
-}
-
-.hero__download-meta span {
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.meta-link {
-  color: var(--primary) !important;
-  font-weight: 500;
-  transition: color 200ms ease;
-}
-
-.meta-link:hover {
-  color: var(--primary-dark) !important;
-  text-decoration: underline;
 }
 
 @media (max-width: 640px) {

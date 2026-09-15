@@ -301,11 +301,15 @@ a:focus-visible {
   justify-content: center;
 }
 
+/*
+ * Anchor landings are offset by `scroll-padding-top` on `html` alone. A matching
+ * `scroll-margin-top` here would stack with it and drop every section 208px down
+ * the viewport instead of the intended 104px.
+ */
 .section {
   width: min(1180px, calc(100% - 56px));
   margin: 0 auto;
   padding: 116px 0;
-  scroll-margin-top: 104px;
 }
 
 .section__heading,
@@ -337,10 +341,23 @@ a:focus-visible {
   margin: 0;
   color: var(--ink);
   font-family: var(--font-serif);
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 500;
-  line-height: 1.22;
+  line-height: 1.24;
   letter-spacing: 0;
+  /* Chinese breaks between any two characters, so a headline that only just
+     overflows its column strands a two-character last line. Balancing evens
+     the two lines out. Unsupported browsers keep the plain wrap. */
+  text-wrap: balance;
+}
+
+code {
+  border-radius: 4px;
+  background: rgba(59, 98, 184, 0.08);
+  color: var(--primary-dark);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  padding: 1px 5px;
 }
 
 .text-rows {
@@ -831,9 +848,9 @@ a:focus-visible {
 
 .final {
   display: grid;
-  min-height: 76svh;
+  min-height: 58svh;
   place-items: center;
-  padding: 112px 28px;
+  padding: 104px 28px 88px;
   text-align: center;
 }
 
@@ -1000,6 +1017,220 @@ html.reveal-ready .reveal:not(.is-visible) {
   transform: translateY(12px);
 }
 
+/* Section index used under the sub-page heroes. Every entry is a real anchor,
+   so a long page gets an orientation strip instead of dead space. */
+.hero-index {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: min(960px, 100%);
+  margin: 46px auto 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.hero-index a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  border-left: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 22px;
+  padding: 15px 22px;
+  transition: background 220ms var(--ease), color 220ms var(--ease);
+}
+
+.hero-index a:first-child {
+  border-left: none;
+}
+
+.hero-index a:hover {
+  background: rgba(59, 98, 184, 0.05);
+  color: var(--primary);
+}
+
+.hero-index a span {
+  color: var(--quiet);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1;
+  transition: color 220ms var(--ease);
+}
+
+.hero-index a:hover span {
+  color: var(--primary);
+}
+
+/* Release metadata strip. Real build-time values, laid out as a spec row. */
+.hero-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(880px, 100%);
+  margin: 46px auto 0;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+}
+
+.hero-facts > div {
+  border-left: 1px solid var(--line-soft);
+  padding: 20px 22px 22px;
+}
+
+.hero-facts > div:first-child {
+  border-left: none;
+}
+
+.hero-facts dt {
+  color: var(--quiet);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.hero-facts dd {
+  margin: 8px 0 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+/*
+ * Dark band. The home page closes its narrative on the dark trust section; the
+ * design page reuses the same device once so a long light column gets a second
+ * accent. The transparent edges let the paper show through, so the band reads
+ * as a band rather than a pasted-on block.
+ */
+.band--dark {
+  position: relative;
+  color: #aeb5c5;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 13, 20, 0) 0%,
+    rgba(11, 13, 20, 0.98) 14%,
+    rgba(11, 13, 20, 0.98) 86%,
+    rgba(11, 13, 20, 0) 100%
+  );
+}
+
+.band--dark h2,
+.band--dark h3,
+.band--dark h4 {
+  color: #f3f5f9;
+}
+
+.band--dark .section__heading {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.band--dark .section__heading p {
+  color: #8ecdc7;
+}
+
+.band--dark code {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c9d4ea;
+}
+
+.site-footer {
+  position: relative;
+  color: #a9b1c1;
+  background: #0b0d14;
+}
+
+.site-footer__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 56px;
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 74px 0 54px;
+}
+
+.site-footer__brand {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+
+.site-footer .brand-logo,
+.site-footer .brand-logo__word {
+  color: #f3f5f9;
+}
+
+.site-footer .brand-logo__tile {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+}
+
+.site-footer .brand-logo__tile::before {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.site-footer__brand p {
+  max-width: 360px;
+  margin: 0;
+  color: #7f8899;
+  font-size: 14px;
+  line-height: 26px;
+}
+
+.site-footer__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(132px, auto));
+  gap: 0 56px;
+}
+
+.site-footer__column {
+  display: grid;
+  align-content: start;
+  gap: 13px;
+}
+
+.site-footer__column > span {
+  color: #7f8899;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: 0.08em;
+}
+
+.site-footer__column a {
+  color: #c3cad7;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  transition: color 200ms var(--ease);
+}
+
+.site-footer__column a:hover {
+  color: #ffffff;
+}
+
+.site-footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 40px;
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
+  padding: 26px 0 46px;
+  color: #6d7686;
+  font-size: 12.5px;
+  line-height: 22px;
+}
+
+.site-footer__base p {
+  margin: 0;
+}
+
 @media (max-width: 980px) {
   .site-header {
     inset: 16px 18px auto;
@@ -1088,6 +1319,17 @@ html.reveal-ready .reveal:not(.is-visible) {
 
   .trust-item {
     min-height: 0;
+  }
+
+  .site-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 44px;
+    padding: 60px 0 44px;
+  }
+
+  .site-footer__columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 28px;
   }
 }
 
@@ -1387,8 +1629,8 @@ html.reveal-ready .reveal:not(.is-visible) {
   }
 
   .final {
-    min-height: 72svh;
-    padding: 84px 18px;
+    min-height: 54svh;
+    padding: 76px 18px 64px;
   }
 
   .final__brand .brand-logo {
@@ -1410,6 +1652,42 @@ html.reveal-ready .reveal:not(.is-visible) {
   .final__brand .brand-logo__word {
     justify-content: center;
     font-size: 46px;
+  }
+
+  .hero-index {
+    gap: 0 2px;
+    margin-top: 34px;
+  }
+
+  .hero-index a {
+    border-left: none;
+    font-size: 13px;
+    padding: 13px 12px;
+  }
+
+  .hero-facts {
+    grid-template-columns: 1fr;
+    margin-top: 34px;
+  }
+
+  .hero-facts > div {
+    border-left: none;
+    border-top: 1px solid var(--line-soft);
+    padding: 16px 4px 18px;
+  }
+
+  .hero-facts > div:first-child {
+    border-top: none;
+  }
+
+  .site-footer__inner,
+  .site-footer__base {
+    width: calc(100% - 36px);
+  }
+
+  .site-footer__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 24px;
   }
 
 }

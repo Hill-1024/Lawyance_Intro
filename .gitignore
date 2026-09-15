@@ -3,6 +3,7 @@ dist/
 .astro/
 .DS_Store
 .idea/
+.video_agent/
 
 # Mirrored release APKs, fetched by `pnpm run fetch:apk` during the build.
 public/apk/
