@@ -28,7 +28,7 @@ interface GitHubReleaseInfo {
   assets?: GitHubReleaseAsset[];
 }
 
-const appOrigin = 'https://law.mutsumi.moe';
+const appOrigin = 'https://lawver.dev';
 const androidReleaseUrl = `${appOrigin}/api/releases/android/latest`;
 const androidApkUrl = `${appOrigin}/api/releases/android/apk`;
 const githubReleaseUrl = 'https://github.com/Hill-1024/Lawyance/releases/latest';

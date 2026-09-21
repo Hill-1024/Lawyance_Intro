@@ -27,7 +27,7 @@
 
         <div class="site-footer__column">
           <span>访问</span>
-          <a href="https://law.mutsumi.moe" target="_blank" rel="noopener noreferrer">Web 工作台</a>
+          <a href="https://lawver.dev/cn" target="_blank" rel="noopener noreferrer">Web 工作台</a>
           <a href="/download">Android 客户端</a>
           <a href="https://github.com/Hill-1024/Lawyance" target="_blank" rel="noopener noreferrer">GitHub 仓库</a>
         </div>

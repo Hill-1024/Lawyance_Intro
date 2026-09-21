@@ -14,7 +14,7 @@
         </p>
         <div class="hero__action reveal is-visible" style="--delay: 360ms">
           <div class="hero__cta-group">
-            <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer">
+            <a href="https://lawver.dev/cn" class="primary-cta" target="_blank" rel="noopener noreferrer">
               <span>进入 Web 工作台</span>
             </a>
             <a :href="releaseInfo.apkUrl" class="secondary-cta">
@@ -183,7 +183,7 @@
       <h2 id="final-title" class="reveal">让法律咨询回到事实、条文与可验证的表达。</h2>
       <p class="reveal">{{ brandName }} 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
       <div class="final__cta-group reveal" style="--delay: 200ms">
-        <a href="https://law.mutsumi.moe" class="primary-cta" target="_blank" rel="noopener noreferrer">进入 Web 工作台</a>
+        <a href="https://lawver.dev/cn" class="primary-cta" target="_blank" rel="noopener noreferrer">进入 Web 工作台</a>
         <a :href="releaseInfo.apkUrl" class="secondary-cta">下载 Android 应用</a>
       </div>
     </section>

@@ -40,7 +40,7 @@
             <h3>Web 网页版</h3>
             <p>无需安装，支持全功能会话、文件沙箱上传以及完整的模拟法庭推演工作流，自适应现代桌面级及平板浏览器。</p>
             <div class="download-action-group">
-              <a href="https://law.mutsumi.moe" target="_blank" rel="noopener noreferrer" class="primary-cta">
+              <a href="https://lawver.dev/cn" target="_blank" rel="noopener noreferrer" class="primary-cta">
                 立即进入 Web 端
               </a>
               <p class="card-meta">推荐 Chrome / Safari / Edge 桌面浏览器</p>
