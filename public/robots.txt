@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /home
+Disallow: /login
+Disallow: /settings
+Disallow: /admin
+Disallow: /business
+Disallow: /court
+Disallow: /api/
+
+Sitemap: https://lawver.dev/sitemap.xml

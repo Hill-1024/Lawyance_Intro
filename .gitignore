@@ -1,9 +1,11 @@
 node_modules/
 dist/
-.astro/
+releases/
+current
+.vite/
 .DS_Store
 .idea/
 .video_agent/
-
-# Mirrored release APKs, fetched by `pnpm run fetch:apk` during the build.
-public/apk/
+.wrangler/
+.v2c/
+*.log

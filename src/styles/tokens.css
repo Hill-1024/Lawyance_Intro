@@ -1,0 +1,211 @@
+/*
+ * 模块描述：介绍页的设计 token 底座，取自 Lawyance 主仓 frontend/src/index.css 的 token 层。
+ * 介绍页与功能页同域但分属两个进程、两份构建，因此 token 用复制同步，不引 workspace 依赖；
+ * 主仓调色板或圆角/阴影/动效档位变更时，这里要同步一份。
+ * 只保留介绍页实际消费的档位（见各 CSS 里的 var() 引用）；功能页专用的排版刻度、层级表
+ * 与主题切换过渡不在这里。
+ */
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-brand: "Cormorant Garamond", var(--font-serif);
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root {
+  --font-sans: "Inter", "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-brand: "Cormorant Garamond", var(--font-serif);
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --brand-logo-tile: transparent;
+  --brand-logo-ink: #1a2238;
+  --brand-logo-border: transparent;
+  --brand-logo-inner-border: transparent;
+  --brand-wordmark: var(--brand-logo-ink);
+
+  --brand-primary-50: #eef2fb;
+  --brand-primary-100: #dce5f6;
+  --brand-primary-200: #b7c7ec;
+  --brand-primary-300: #8aa4dd;
+  --brand-primary-400: #5c7fcc;
+  --brand-primary-500: #3b62b8;
+  --brand-primary-600: #2f4fa0;
+  --brand-primary-700: #243d85;
+  --brand-primary-800: #1b2e66;
+  --brand-primary-900: #131f47;
+
+  --brand-secondary-50: #f1f4f9;
+  --brand-secondary-100: #e1e7f0;
+  --brand-secondary-200: #c2cddf;
+  --brand-secondary-300: #9dabc4;
+  --brand-secondary-400: #76869f;
+  --brand-secondary-500: #586378;
+  --brand-secondary-600: #424b5c;
+  --brand-secondary-700: #2f3645;
+  --brand-secondary-800: #1f2532;
+  --brand-secondary-900: #131722;
+
+  --brand-tertiary-50: #ecf5f4;
+  --brand-tertiary-100: #d2e8e5;
+  --brand-tertiary-200: #a4d0cb;
+  --brand-tertiary-300: #6fb3ac;
+  --brand-tertiary-400: #46948d;
+  --brand-tertiary-500: #2c7670;
+  --brand-tertiary-600: #1f5c57;
+  --brand-tertiary-700: #154441;
+  --brand-tertiary-800: #0e2f2c;
+
+  --color-success-500: #2e7d55;
+  --color-success-100: #d8eddf;
+  --color-warning-500: #b8842a;
+  --color-warning-100: #fbebc8;
+  --color-danger-500: #b0463e;
+  --color-danger-100: #f7ddd9;
+
+  --neutral-0: #ffffff;
+  --neutral-25: #fbfcfd;
+  --neutral-50: #f6f8fb;
+  --neutral-100: #eef1f6;
+  --neutral-200: #dee3ec;
+  --neutral-300: #c5ccd8;
+  --neutral-400: #9aa3b2;
+  --neutral-500: #6b7385;
+  --neutral-600: #4b5160;
+  --neutral-700: #353a47;
+  --neutral-800: #1e222c;
+  --neutral-900: #14171f;
+  --neutral-950: #0b0d14;
+
+  --bg-app: var(--neutral-50);
+  --bg-surface: var(--neutral-0);
+  --bg-surface-2: var(--neutral-25);
+  --bg-elevated: var(--neutral-0);
+  --bg-inset: var(--neutral-100);
+  --bg-overlay: rgba(11, 13, 20, 0.4);
+
+  --fg-1: var(--neutral-900);
+  --fg-2: var(--neutral-700);
+  --fg-3: var(--neutral-500);
+  --fg-4: var(--neutral-400);
+  --fg-on-accent: var(--neutral-0);
+
+  --border-subtle: rgba(20, 23, 31, 0.06);
+  --border-default: rgba(20, 23, 31, 0.1);
+  --border-strong: rgba(20, 23, 31, 0.18);
+
+  --accent: var(--brand-primary-500);
+  --accent-hover: var(--brand-primary-600);
+  --accent-quiet: var(--brand-primary-50);
+  --accent-on: var(--neutral-0);
+
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(20, 23, 31, 0.06);
+  --shadow-2: 0 1px 3px rgba(20, 23, 31, 0.06), 0 2px 8px rgba(20, 23, 31, 0.04);
+  --shadow-3: 0 2px 6px rgba(20, 23, 31, 0.07), 0 8px 24px rgba(20, 23, 31, 0.08);
+  --shadow-4: 0 4px 12px rgba(20, 23, 31, 0.08), 0 16px 40px rgba(20, 23, 31, 0.1);
+  --shadow-5: 0 8px 24px rgba(20, 23, 31, 0.1), 0 24px 60px rgba(20, 23, 31, 0.14);
+
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+  --radius-pill: 999px;
+
+  /* 介绍页只用得到普通模态一档；功能页的完整层级表在主仓的 index.css 里。 */
+  --z-modal: 500;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-theme: 280ms;
+  --dur-slow: 360ms;
+}
+
+.dark,
+[data-theme="dark"] {
+  --brand-logo-tile: transparent;
+  --brand-logo-ink: #f6f8fb;
+  --brand-logo-border: transparent;
+  --brand-logo-inner-border: transparent;
+  --brand-wordmark: var(--brand-logo-ink);
+
+  --bg-app: var(--neutral-950);
+  --bg-surface: var(--neutral-900);
+  --bg-surface-2: var(--neutral-800);
+  --bg-elevated: #1a1e28;
+  --bg-inset: #0f121b;
+  --bg-overlay: rgba(0, 0, 0, 0.55);
+
+  --fg-1: #eceef3;
+  --fg-2: #c8cdd8;
+  --fg-3: #8b92a4;
+  --fg-4: #5e6577;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  --accent: #8aa4dd;
+  --accent-hover: #a6bbe6;
+  --accent-quiet: rgba(138, 164, 221, 0.14);
+  --accent-on: var(--brand-primary-900);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.brand-wordmark {
+  font-family: var(--font-brand);
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--brand-wordmark);
+  font-synthesis: none;
+}
+
+.brand-wordmark-swash {
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* 系统级降级：用户要求减少动效时，入场与过渡直接落位。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
