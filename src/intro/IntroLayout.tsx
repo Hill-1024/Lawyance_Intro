@@ -18,6 +18,9 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { Pause, Play } from "lucide-react";
 import { BrandMark } from "../components/Brand";
+import { AccountWidget } from "./AccountWidget";
+import type { AccountSession } from "../services/api";
+import "./intro-account.css";
 import {
   MotionProvider,
   prefersReducedMotion,
@@ -46,7 +49,9 @@ const DESIGN_HASHES = ["#topology", "#pipeline", "#court", "#memory", "#security
 
 interface IntroLayoutProps {
   activePage: "home" | "design" | "download" | "pricing";
-  isAuthenticated: boolean;
+  /** undefined = 会话还在探测（头像位出骨架）；null = 未登录；对象 = 已登录。 */
+  account: AccountSession | null | undefined;
+  onAccountChange: (session: AccountSession | null) => void;
   children: React.ReactNode;
 }
 
@@ -58,7 +63,8 @@ export default function IntroLayout(props: IntroLayoutProps) {
   );
 }
 
-function IntroShell({ activePage, isAuthenticated, children }: IntroLayoutProps) {
+function IntroShell({ activePage, account, onAccountChange, children }: IntroLayoutProps) {
+  const isAuthenticated = Boolean(account);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -219,6 +225,16 @@ function IntroShell({ activePage, isAuthenticated, children }: IntroLayoutProps)
           </div>
         </nav>
         <div className="site-header__actions">
+          <AccountWidget
+            account={
+              account === undefined
+                ? { phase: "loading" }
+                : account
+                  ? { phase: "authed", session: account }
+                  : { phase: "anonymous" }
+            }
+            onAccountChange={onAccountChange}
+          />
           <button
             type="button"
             className="motion-toggle motion-toggle--header"

@@ -18,7 +18,7 @@ import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
 import IntroLayout from './intro/IntroLayout';
 import HomePage from './intro/HomePage';
 import type { ReactNode } from 'react';
-import { fetchSession } from './services/api';
+import { fetchSession, type AccountSession } from './services/api';
 
 // 首页随初始包下发；其余三页按需加载，首屏不为它们付出体积。
 const DesignPage = lazy(() => import('./intro/DesignPage'));
@@ -47,9 +47,10 @@ const PageFallback = () => (
 const withLayout = (
   activePage: 'design' | 'download' | 'pricing',
   page: ReactNode,
-  isAuthenticated: boolean,
+  account: AccountSession | null | undefined,
+  onAccountChange: (session: AccountSession | null) => void,
 ) => (
-  <IntroLayout activePage={activePage} isAuthenticated={isAuthenticated}>
+  <IntroLayout activePage={activePage} account={account} onAccountChange={onAccountChange}>
     <Suspense fallback={<PageFallback />}>
       {/* 外层 .intro-route（IntroLayout，keyed by pathname）负责「旧页→骨架」的淡入；
           这里再包一层 keyed 容器负责「骨架→新页」：懒加载解析后本 div 才挂载，
@@ -62,12 +63,13 @@ const withLayout = (
 );
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // undefined = 探测中（账户位先出骨架）；null = 未登录；对象 = 已登录。
+  const [account, setAccount] = useState<AccountSession | null | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
-    void fetchSession().then((authenticated) => {
-      if (!cancelled) setIsAuthenticated(authenticated);
+    void fetchSession().then((session) => {
+      if (!cancelled) setAccount(session.authenticated ? session : null);
     });
     return () => {
       cancelled = true;
@@ -76,17 +78,23 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomeRoute isAuthenticated={isAuthenticated} />} />
-      <Route path="/design" element={withLayout('design', <DesignPage />, isAuthenticated)} />
-      <Route path="/pricing" element={withLayout('pricing', <PricingPage />, isAuthenticated)} />
-      <Route path="/download" element={withLayout('download', <DownloadPage />, isAuthenticated)} />
+      <Route path="/" element={<HomeRoute account={account} onAccountChange={setAccount} />} />
+      <Route path="/design" element={withLayout('design', <DesignPage />, account, setAccount)} />
+      <Route path="/pricing" element={withLayout('pricing', <PricingPage />, account, setAccount)} />
+      <Route path="/download" element={withLayout('download', <DownloadPage />, account, setAccount)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
 
 /** 首页：带旧版 query 深链时先整页跳到功能页路径，其余情况渲染首页。 */
-function HomeRoute({ isAuthenticated }: { isAuthenticated: boolean }) {
+function HomeRoute({
+  account,
+  onAccountChange,
+}: {
+  account: AccountSession | null | undefined;
+  onAccountChange: (session: AccountSession | null) => void;
+}) {
   const [params] = useSearchParams();
   const conversation = params.get('conversation');
   const court = params.get('court');
@@ -107,8 +115,8 @@ function HomeRoute({ isAuthenticated }: { isAuthenticated: boolean }) {
   if (target) return null;
 
   return (
-    <IntroLayout activePage="home" isAuthenticated={isAuthenticated}>
-      <HomePage isAuthenticated={isAuthenticated} />
+    <IntroLayout activePage="home" account={account} onAccountChange={onAccountChange}>
+      <HomePage isAuthenticated={Boolean(account)} />
     </IntroLayout>
   );
 }
