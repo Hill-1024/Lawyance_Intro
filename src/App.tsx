@@ -6,6 +6,11 @@
  *
  * 旧版首页深链（/?project|conversation|court=…）由本站转发到功能页对应路径，
  * 老书签不至于全废。
+ *
+ * 进入侧连续性（不做退出动画）：路由容器按 pathname keyed 淡入
+ * （.intro-route，200-300ms，尊重 reduced-motion），布局头尾保持连续；
+ * 懒加载结构（lazy + Suspense）不动，只把 fallback 从 60vh 空白+小 spinner
+ * 换成与目标页骨架同宽的灰块骨架 + 内容淡入。
  */
 
 import { Suspense, lazy, useEffect, useState } from 'react';
@@ -20,10 +25,22 @@ const DesignPage = lazy(() => import('./intro/DesignPage'));
 const DownloadPage = lazy(() => import('./intro/DownloadPage'));
 const PricingPage = lazy(() => import('./intro/PricingPage'));
 
-/** 次级页加载态：布局（头尾）已在，内容区留一块安静的占位。 */
+/**
+ * 次级页加载态：与目标页骨架同宽的灰块（hero 标题行 + 三栏卡片行），
+ * 头尾已在，不再用 60vh 空白；内容落定后走 .intro-route 淡入。
+ */
 const PageFallback = () => (
   <div className="intro-loading" role="status" aria-label="正在加载页面">
-    <span />
+    <div className="intro-loading__hero" aria-hidden="true">
+      <span className="intro-loading__line intro-loading__line--title" />
+      <span className="intro-loading__line intro-loading__line--lead" />
+      <span className="intro-loading__line intro-loading__line--lead-short" />
+    </div>
+    <div className="intro-loading__grid" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </div>
   </div>
 );
 
@@ -33,7 +50,14 @@ const withLayout = (
   isAuthenticated: boolean,
 ) => (
   <IntroLayout activePage={activePage} isAuthenticated={isAuthenticated}>
-    <Suspense fallback={<PageFallback />}>{page}</Suspense>
+    <Suspense fallback={<PageFallback />}>
+      {/* 外层 .intro-route（IntroLayout，keyed by pathname）负责「旧页→骨架」的淡入；
+          这里再包一层 keyed 容器负责「骨架→新页」：懒加载解析后本 div 才挂载，
+          动画在此时触发，新页不再瞬间弹入。 */}
+      <div key={activePage} className="intro-route">
+        {page}
+      </div>
+    </Suspense>
   </IntroLayout>
 );
 

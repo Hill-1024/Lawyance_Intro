@@ -61,25 +61,27 @@ export default function PricingPage() {
   return (
     <main id="top" className="page">
       <section className="hero hero--pricing">
-        <div className="hero__tag reveal is-visible">定价</div>
-        <h1 className="reveal is-visible">
-          按你的办案强度
-          <br />
-          选一档
-        </h1>
-        <p className="hero__lead reveal is-visible" style={{ "--delay": "80ms" } as React.CSSProperties}>
-          credits 是 Lawver 的用量单位：模型调用按 token、工具调用按次数扣费。
-          订阅档位自带每月的 credits 额度，并按档位享受用量折扣。支付尚未开放，开通与充值请联系客服。
-        </p>
+        <div className="hero__content">
+          <div className="hero__tag">定价</div>
+          <h1>
+            按你的办案强度
+            <br />
+            选一档
+          </h1>
+          <p className="hero__lead">
+            credits 是 Lawver 的用量单位：模型调用按 token、工具调用按次数扣费。
+            订阅档位自带每月的 credits 额度，并按档位享受用量折扣。支付尚未开放，开通与充值请联系客服。
+          </p>
+        </div>
       </section>
 
       <section className="section section--pricing">
-        <div className="section__heading reveal is-visible">
-          <span className="section__eyebrow">套餐</span>
-          <h2>四档选择，随时可换</h2>
+        <div className="section__heading">
+          <p>套餐</p>
+          <h2>从个人到团队，随时可换</h2>
         </div>
 
-        <div className="pricing-toggle reveal is-visible" role="group" aria-label="计费周期">
+        <div className="pricing-toggle" role="group" aria-label="计费周期">
           <button
             type="button"
             className={billing === "month" ? "is-on" : ""}
@@ -99,17 +101,21 @@ export default function PricingPage() {
           </button>
         </div>
 
-        <div className="pricing-grid">
+        {/* 列数跟随后端目录：--plan-count 由 intro-pricing.css 消费，窄屏断点仍折叠为 2/1 列。 */}
+        <div
+          className="pricing-grid"
+          style={{ "--plan-count": plans.length } as React.CSSProperties}
+        >
           {plans.map((plan, index) => (
             <article
               key={plan.id}
-              className={"pricing-card reveal is-visible" + (plan.recommended ? " pricing-card--featured" : "")}
+              className={"pricing-card" + (plan.recommended ? " pricing-card--featured" : "")}
               style={{ "--delay": `${index * 60}ms` } as React.CSSProperties}
             >
               {plan.recommended && <span className="pricing-card__flag">最受欢迎</span>}
               <h3>{plan.name}</h3>
               <p className="pricing-card__tagline">{plan.tagline}</p>
-              <div className="pricing-card__price">
+              <div className="pricing-card__price" key={billing}>
                 {plan.price_month === null ? (
                   <span className="pricing-card__consult">咨询客服</span>
                 ) : plan.price_month === 0 ? (
@@ -146,17 +152,15 @@ export default function PricingPage() {
       </section>
 
       <section className="final">
-        <div className="final__inner reveal is-visible">
-          <h2>不确定选哪一档？</h2>
-          <p>先按量充值试用，用量到一定规模再换订阅更划算。客服可以按你的实际用量给出建议。</p>
-          <div className="final__actions">
-            <Link className="primary-cta" to="/download">
-              下载客户端
-            </Link>
-            <Link className="secondary-cta" to="/">
-              回到首页
-            </Link>
-          </div>
+        <h2>不确定选哪一档？</h2>
+        <p>先按量充值试用，用量到一定规模再换订阅更划算。客服可以按你的实际用量给出建议。</p>
+        <div className="final__cta-group">
+          <Link className="primary-cta" to="/download">
+            下载客户端
+          </Link>
+          <Link className="secondary-cta" to="/">
+            回到首页
+          </Link>
         </div>
       </section>
 

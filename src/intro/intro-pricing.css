@@ -1,9 +1,12 @@
 /* 介绍页 · 定价
    复用 intro-base.css 的 .section / .hero / .final 骨架，这里只补定价卡与开通弹窗。
-   z-index 取 --z-modal 一档：它盖住介绍页自身，但不越过全局 alert/confirm。 */
+   z-index 取 --z-modal 一档：它盖住介绍页自身，但不越过全局 alert/confirm。
+   内容宽/卡片 padding/圆角沿用介绍页本地 token（见 intro-base.css 顶部 token 表，
+   复制同步、不 import 主仓）：卡片 padding 26-32px、圆角 --radius-md。 */
 
 .hero--pricing {
-  padding-bottom: 24px;
+  /* 次级页统一档：与 design/download 同为 46svh 基座，不再额外压 24px。 */
+  padding-bottom: 40px;
 }
 
 .hero--pricing .hero__lead {
@@ -54,9 +57,10 @@
   box-shadow: var(--shadow-1);
 }
 
+/* 列数跟随后端 /api/plans 的档位数（PricingPage 写入 --plan-count），目录增减不用改这里。 */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--plan-count, 4), minmax(0, 1fr));
   gap: 20px;
 }
 
@@ -69,11 +73,17 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-surface);
-  transition: border-color var(--dur-fast) var(--ease-standard);
+  /* 最小 hover 上浮 + 阴影（全站卡片统一语），按钮 :active 另见下方。 */
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-emphasized),
+    box-shadow var(--dur-fast) var(--ease-emphasized);
 }
 
 .pricing-card:hover {
   border-color: var(--border-default);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
 }
 
 .pricing-card--featured {
@@ -110,11 +120,31 @@
 
 .pricing-card__price {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
   margin: 20px 0 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border-subtle);
+  /* 按月/年切换时数字淡入（key 换实例重挂载触发，无布局抖动）。 */
+  animation: pricingPriceIn var(--dur-base) var(--ease-emphasized);
+}
+
+/* 五档并排时卡片窄，价格词组不许从中间折断（「按量计/费」），整词换行。 */
+.pricing-card__price strong,
+.pricing-card__price small {
+  white-space: nowrap;
+}
+
+@keyframes pricingPriceIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .pricing-card__price strong {
@@ -175,13 +205,19 @@
   font-weight: 600;
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease-standard),
-    border-color var(--dur-fast) var(--ease-standard);
+    border-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-emphasized);
 }
 
 .pricing-card__cta:hover {
   background: var(--accent-quiet);
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* 按钮最小按压反馈（全站统一语）。 */
+.pricing-card__cta:active {
+  transform: scale(0.98);
 }
 
 .pricing-card--featured .pricing-card__cta {

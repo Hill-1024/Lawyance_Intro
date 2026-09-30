@@ -27,11 +27,17 @@
   border-radius: 12px;
   background: var(--bg-surface);
   padding: 40px;
-  transition: border-color 240ms var(--ease-emphasized);
+  /* 最小 hover 上浮 + 阴影（与定价卡同一套语），reduced-motion 由全局 1ms 兜底。 */
+  transition:
+    border-color 240ms var(--ease-emphasized),
+    transform 240ms var(--ease-emphasized),
+    box-shadow 240ms var(--ease-emphasized);
 }
 
 .lawver-intro .download-card:hover {
   border-color: color-mix(in srgb, var(--fg-1) 14%, transparent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
 }
 
 .lawver-intro .highlight-card {
@@ -121,5 +127,35 @@
 
   .lawver-intro .download-card {
     min-height: 0;
+  }
+}
+
+/* 640 档：40px padding 收到 22-26px，min-height 清零，双 CTA 单列不再溢出
+   （360px 下两个 min-width:150px 并排会顶出卡片）。 */
+@media (max-width: 640px) {
+  .lawver-intro .download-card {
+    min-height: 0;
+    padding: 26px 22px;
+  }
+
+  .lawver-intro .download-card h3 {
+    font-size: 22px;
+    line-height: 32px;
+  }
+
+  .lawver-intro .cta-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lawver-intro .cta-actions .primary-cta,
+  .lawver-intro .cta-actions .secondary-cta {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .lawver-intro .download-action-group .primary-cta {
+    min-width: 0;
+    width: 100%;
   }
 }

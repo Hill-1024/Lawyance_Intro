@@ -1,16 +1,13 @@
 /*
  * 模块描述：下载中心页（自 lawyance-intro 的 DownloadPage.vue 移植）。
- * 仅渲染页面主体：站点头尾、.page 背景与 reveal 入场均由应用布局和共享样式提供。
+ * 仅渲染页面主体：站点头尾与 .page 背景由应用布局和共享样式提供。
  */
 
-import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { Globe, Smartphone } from "lucide-react";
 import { formatPublishedAt, useLatestRelease } from "./release";
 import "./intro-download.css";
 
-// hero 区元素与 Vue 版一致直接以 is-visible 呈现，仅保留 stagger 延迟变量。
-const withDelay = (delay: string) => ({ "--delay": delay }) as CSSProperties;
 
 export default function DownloadPage() {
   const release = useLatestRelease();
@@ -28,17 +25,17 @@ export default function DownloadPage() {
       {/* Hero Section */}
       <section className="hero download-hero" aria-labelledby="download-hero-title">
         <div className="hero__content">
-          <span className="hero__tag reveal is-visible" style={withDelay("80ms")}>
+          <span className="hero__tag">
             DOWNLOAD CENTER
           </span>
-          <h1 id="download-hero-title" className="reveal is-visible" style={withDelay("160ms")}>
+          <h1 id="download-hero-title">
             下载中心
           </h1>
-          <p className="hero__lead reveal is-visible" style={withDelay("240ms")}>
+          <p className="hero__lead">
             体验 Lawver 法律 AI 工作台的全部潜力。支持网页版直接访问及原生 Android
             客户端下载。
           </p>
-          <dl className="hero-facts reveal is-visible" style={withDelay("320ms")}>
+          <dl className="hero-facts">
             {releaseFacts.map((fact) => (
               <div key={fact.label}>
                 <dt>{fact.label}</dt>
@@ -51,12 +48,12 @@ export default function DownloadPage() {
 
       {/* Download Options Section */}
       <section className="section section--download" aria-labelledby="options-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>客户端下载与访问</p>
           <h2 id="options-title">多端联动，即刻开启法律工作流程。</h2>
         </div>
 
-        <div className="download-content reveal">
+        <div className="download-content">
           <div className="cards-layout">
             {/* Web Entrance Card */}
             <div className="download-card highlight-card">
@@ -110,8 +107,8 @@ export default function DownloadPage() {
 
       {/* Final Section */}
       <section className="final download-final">
-        <h2 className="reveal">让严肃的法律计算，以极速、优雅的多端体验呈现在您的工作流中。</h2>
-        <div className="final__cta-group reveal" style={withDelay("160ms")}>
+        <h2>让严肃的法律计算，以极速、优雅的多端体验呈现在您的工作流中。</h2>
+        <div className="final__cta-group">
           <Link to="/" className="primary-cta">
             返回产品首页
           </Link>

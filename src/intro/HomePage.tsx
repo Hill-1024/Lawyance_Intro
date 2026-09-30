@@ -10,11 +10,10 @@
  * 用户可以随时暂停滚动动画与环境光。
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Pause, Play } from "lucide-react";
 import WorkbenchDemo from "./WorkbenchDemo";
-import { useAmbientBackground } from "./effects";
+import { useAmbientBackground, useMotion } from "./effects";
 
 interface HomePageProps {
   isAuthenticated: boolean;
@@ -141,15 +140,10 @@ const TRUST_ITEMS = [
 
 export default function HomePage({ isAuthenticated }: HomePageProps) {
   const trustRef = useRef<HTMLElement>(null);
-  const methodRef = useRef<HTMLElement>(null);
-  const [activeWorkflowIndex, setActiveWorkflowIndex] = useState(0);
-  // 动效开关：初始跟随系统设置；暂停后停掉滚动插值与环境光监听，
-  // 入场元素仍会就位，只是不再有过渡。
-  const [motionPaused, setMotionPaused] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  // 动效总开关来自布局级 MotionProvider（头部全局按钮控制）：
+  // paused 时环境光只落一帧静态（useAmbientBackground enabled=false）。
+  // 内容不随滚动浮现（quote.law 基准：内容直接在场），滚动期没有逐帧监听。
+  const { paused: motionPaused } = useMotion();
 
   useAmbientBackground(trustRef, !motionPaused);
 
@@ -157,55 +151,25 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
     document.title = "Lawver | 法律 AI 工作台";
   }, []);
 
-  // 方法卡堆：由 section 滚动进度推导当前卡（rAF 节流），逻辑与官网一致；暂停动效时冻结。
-  const methodFrame = useRef(0);
-  useEffect(() => {
-    if (motionPaused) return;
-    const measure = () => {
-      const method = methodRef.current;
-      if (!method) return 0;
-      const rect = method.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      const scrollable = Math.max(1, rect.height - viewportHeight);
-      const progress = clamp01((viewportHeight * 0.18 - rect.top) / scrollable);
-      return Math.min(WORKFLOW.length - 1, Math.floor(progress * WORKFLOW.length));
-    };
-    const update = () => {
-      if (methodFrame.current) return;
-      methodFrame.current = window.requestAnimationFrame(() => {
-        methodFrame.current = 0;
-        setActiveWorkflowIndex(measure());
-      });
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      if (methodFrame.current) window.cancelAnimationFrame(methodFrame.current);
-    };
-  }, [motionPaused]);
-
   const startCtaTo = isAuthenticated ? "/home" : "/login";
 
   return (
-    <main id="top" className={"page" + (motionPaused ? " motion-paused" : "")}>
+    <main id="top" className="page">
       <section className="hero hero--display" aria-labelledby="hero-title">
         <div className="hero__content">
-          <Link to="/download" className="hero__badge reveal">
+          <Link to="/download" className="hero__badge">
             服务条款与定价已公布
             <span aria-hidden="true">→</span>
           </Link>
-          <h1 id="hero-title" className="reveal">
+          <h1 id="hero-title">
             让法律工作，
             <br />
             井然有序。
           </h1>
-          <p className="hero__lead reveal">
+          <p className="hero__lead">
             从整理材料到形成文书，从核验依据到准备庭审。Lawver 让每一步法律工作，都有清晰的上下文与可继续追问的结果。
           </p>
-          <div className="hero__action reveal">
+          <div className="hero__action">
             <div className="hero__cta-group">
               <a href={startCtaTo} className="primary-cta">
                 <span>开始使用</span>
@@ -214,19 +178,10 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
                 <span>下载客户端</span>
               </Link>
             </div>
-            <button
-              type="button"
-              className="motion-toggle"
-              aria-pressed={motionPaused}
-              onClick={() => setMotionPaused((paused) => !paused)}
-            >
-              {motionPaused ? (
-                <Play size={14} strokeWidth={2} aria-hidden="true" />
-              ) : (
-                <Pause size={14} strokeWidth={2} aria-hidden="true" />
-              )}
-              {motionPaused ? "启用动效" : "暂停动效"}
-            </button>
+            {/* 动效开关已提升到布局头部（全局），这里留一行提示，不再放第二个按钮。 */}
+            {motionPaused && (
+              <p className="motion-note">动效已暂停，可在顶部导航重新启用。</p>
+            )}
           </div>
         </div>
       </section>
@@ -234,13 +189,13 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
       <WorkbenchDemo />
 
       <section id="abilities" className="section section--abilities" aria-labelledby="abilities-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>能力介绍</p>
           <h2 id="abilities-title">从真实法律工作出发，先处理事实，再组织依据。</h2>
         </div>
         <div className="text-rows" aria-label="Lawver 能力">
           {ABILITIES.map((item) => (
-            <article key={item.title} className="text-row reveal">
+            <article key={item.title} className="text-row">
               <span>{item.no}</span>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
@@ -250,13 +205,13 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
       </section>
 
       <section id="workbench" className="section workbench" aria-labelledby="workbench-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>应用工作台</p>
           <h2 id="workbench-title">咨询、卷宗与庭审训练，沿着同一条案件线索展开。</h2>
         </div>
         <div className="workbench__layout" aria-label="核心工作台">
           {WORK_SURFACES.map((surface) => (
-            <article key={surface.title} className="surface-pane reveal">
+            <article key={surface.title} className="surface-pane">
               <div className="surface-pane__heading">
                 <span>{surface.no}</span>
                 <h3>{surface.title}</h3>
@@ -272,77 +227,50 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
         </div>
       </section>
 
-      <section
-        id="method"
-        ref={methodRef}
-        className="section method"
-        aria-labelledby="method-title"
-        style={{ "--workflow-count": WORKFLOW.length } as React.CSSProperties}
-      >
-        <div className="method__sticky">
-          <div className="method__copy reveal">
-            <p>工作方式</p>
-            <h2 id="method-title">先厘清问题，再形成可以核验的答案。</h2>
-            <p>
-              Lawver 在不同任务复杂度下切换工作方式。简单咨询保持直接，复杂任务先明确步骤。
-              引用能回到来源，结论能说明依据，未核实的信息也应如实标注。
-            </p>
-            <div className="method__progress" aria-hidden="true">
-              {WORKFLOW.map((step, index) => (
-                <span key={step.no} className={index === activeWorkflowIndex ? "is-current" : ""} />
-              ))}
-            </div>
-          </div>
-          <div className="agent-stack" aria-label="Lawver 工作方式">
-            {WORKFLOW.map((step, index) => (
-              <article
-                key={step.title}
-                className={
-                  "agent-card" +
-                  (index === activeWorkflowIndex ? " is-active" : "") +
-                  (index < activeWorkflowIndex ? " is-before" : "") +
-                  (index > activeWorkflowIndex ? " is-after" : "")
-                }
-                style={
-                  {
-                    "--card-index": index,
-                    "--card-offset": index - activeWorkflowIndex,
-                  } as React.CSSProperties
-                }
-              >
-                <div className="agent-card__meta">
-                  <span>{step.no}</span>
-                  <span>{step.phase}</span>
-                </div>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.body}</p>
-                </div>
-                <dl className="agent-card__details">
-                  {step.details.map((detail) => (
-                    <div key={detail.label}>
-                      <dt>{detail.label}</dt>
-                      <dd>{detail.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </article>
-            ))}
-          </div>
+      <section id="method" className="section method" aria-labelledby="method-title">
+        <div className="section__heading">
+          <p>工作方式</p>
+          <h2 id="method-title">先厘清问题，再形成可以核验的答案。</h2>
+        </div>
+        <p className="method__lead">
+          Lawver 在不同任务复杂度下切换工作方式。简单咨询保持直接，复杂任务先明确步骤。
+          引用能回到来源，结论能说明依据，未核实的信息也应如实标注。
+        </p>
+        <div className="method__grid" aria-label="Lawver 工作方式">
+          {WORKFLOW.map((step) => (
+            <article key={step.title} className="agent-card">
+              <div className="agent-card__meta">
+                <span>{step.no}</span>
+                <span>{step.phase}</span>
+              </div>
+              <div>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </div>
+              <dl className="agent-card__details">
+                {step.details.map((detail) => (
+                  <div key={detail.label}>
+                    <dt>{detail.label}</dt>
+                    <dd>{detail.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          ))}
         </div>
       </section>
 
       <section id="memory" className="section memory" aria-labelledby="memory-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>注意力与记忆</p>
           <h2 id="memory-title">注意力处理当下，记忆保留边界。</h2>
         </div>
         <div className="memory__body">
-          <p className="memory__lead reveal">
+          <p className="memory__lead">
             Lawver 不把所有历史都压进当前上下文，也不把记忆做成用户画像。系统先让当前问题、卷宗片段与工具结果进入注意力，
             再把对话级记忆或庭审角色记忆中稳定的目标、约束与案件事实作为边界补入。
           </p>
-          <div className="memory__balance reveal" aria-label="注意力与记忆的平衡">
+          <div className="memory__balance" aria-label="注意力与记忆的平衡">
             <article className="memory-pane">
               <span>Attention</span>
               <h3>当前注意力</h3>
@@ -361,7 +289,7 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
           </div>
           <div className="memory__rows">
             {MEMORY_ITEMS.map((item) => (
-              <article key={item.title} className="memory-row reveal">
+              <article key={item.title} className="memory-row">
                 <span>{item.no}</span>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
@@ -373,13 +301,13 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
 
       <section id="trust" ref={trustRef} className="trust" aria-labelledby="trust-title">
         <div className="trust__inner">
-          <div className="trust__heading reveal">
+          <div className="trust__heading">
             <p>信任与边界</p>
             <h2 id="trust-title">数据边界先于产品承诺。</h2>
           </div>
           <div className="trust__items">
             {TRUST_ITEMS.map((item) => (
-              <article key={item.title} className="trust-item reveal">
+              <article key={item.title} className="trust-item">
                 <span>{item.no}</span>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
@@ -390,11 +318,11 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
       </section>
 
       <section id="consultation" className="final" aria-labelledby="final-title">
-        <h2 id="final-title" className="reveal">
+        <h2 id="final-title">
           让法律咨询回到事实、条文与可验证的表达。
         </h2>
-        <p className="reveal">Lawver 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
-        <div className="final__cta-group reveal" style={{ "--delay": "200ms" } as React.CSSProperties}>
+        <p>Lawver 保持安静的界面和谨慎的语言，只在必要处提供结构、依据与下一步。</p>
+        <div className="final__cta-group">
           <a href={startCtaTo} className="primary-cta">
             打开工作台
           </a>

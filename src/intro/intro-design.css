@@ -70,7 +70,8 @@
   margin: 14px 0 0;
   color: var(--fg-1);
   font-family: var(--font-serif);
-  font-size: 19px;
+  /* 层标题档 18px（token 表两级 h4 之一），原 19px 并入。 */
+  font-size: 18px;
   font-weight: 500;
   line-height: 28px;
 }
@@ -224,7 +225,8 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: 14px;
-  padding: 44px;
+  /* 大卡档 32px（token 表卡片 padding 两级之一），原 44px 并入。 */
+  padding: 32px;
   margin-top: 48px;
 }
 
@@ -421,7 +423,8 @@
 
 .trust-card h4 {
   font-family: var(--font-serif);
-  font-size: 17px;
+  /* 卡片小标题档 16px（token 表两级 h4 之一），原 17px 并入。 */
+  font-size: 16px;
   font-weight: 500;
   margin: 0 0 10px;
   color: var(--fg-1);

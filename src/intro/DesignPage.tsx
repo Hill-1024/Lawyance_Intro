@@ -5,54 +5,79 @@
  */
 
 import { useRef } from "react";
-import type { CSSProperties } from "react";
 import { Box, LockKeyhole } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAmbientBackground } from "./effects";
+import { useAmbientBackground, useMotion, useScrollSpy, scrollToHashTarget } from "./effects";
 import "./intro-design.css";
 
-// 首屏元素沿用 Vue 模板里的显式 --delay 入场延迟，这里原样保留。
-const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
+
+// 本页目录：与布局 scrollspy 共用同一套 is-active/aria-current 语义。
+const DESIGN_TOC = [
+  { hash: "#topology", no: "01", label: "整体拓扑" },
+  { hash: "#pipeline", no: "02", label: "编排管线" },
+  { hash: "#court", no: "03", label: "模拟法庭" },
+  { hash: "#memory", no: "04", label: "记忆系统" },
+  { hash: "#security", no: "05", label: "沙箱边界" },
+];
+const DESIGN_TOC_HASHES = DESIGN_TOC.map(({ hash }) => hash);
+
+// 同页锚点：直接平滑定位，不经过路由（与布局首页锚点同一套机制）。
+const scrollToc = (hash: string) => (event: React.MouseEvent) => {
+  event.preventDefault();
+  // 保留 history.state：react-router 的 key/idx 在里面，置 null 会丢 POP/PUSH 判定。
+  window.history.replaceState(window.history.state, "", hash);
+  scrollToHashTarget(hash);
+};
 
 export default function DesignPage() {
   // 沙箱安全节是整页唯一的深色横幅：它充满视口时驱动整页背景随之变暗。
+  // enabled 受布局级动效总开关控制（头部全局按钮），暂停后只落一帧静态。
   const securityRef = useRef<HTMLElement>(null);
-  useAmbientBackground(securityRef);
+  const { paused: motionPaused } = useMotion();
+  useAmbientBackground(securityRef, !motionPaused);
+  const spyActive = useScrollSpy(DESIGN_TOC_HASHES);
 
   return (
     <main id="top" className="page intro-page--design" aria-labelledby="design-hero-title">
       {/* Hero Section */}
       <section className="hero design-hero" aria-labelledby="design-hero-title">
         <div className="hero__content">
-          <span className="hero__tag reveal is-visible" style={delay(80)}>ARCHITECTURAL DESIGN</span>
-          <h1 id="design-hero-title" className="reveal is-visible" style={delay(160)}>系统架构与设计</h1>
-          <p className="hero__lead reveal is-visible" style={delay(240)}>
+          <span className="hero__tag">ARCHITECTURAL DESIGN</span>
+          <h1 id="design-hero-title">系统架构与设计</h1>
+          <p className="hero__lead">
             Lawver 绝非不可追溯结论的「黑盒对话框」，而是一套将法律推理、分步规划、独立记忆、隔离沙箱与输出校验收束在同一物理边界内的专业级工作台。
           </p>
-          <nav className="hero-index reveal is-visible" style={delay(320)} aria-label="本页章节">
-            <a href="#topology"><span>01</span>整体拓扑</a>
-            <a href="#pipeline"><span>02</span>编排管线</a>
-            <a href="#court"><span>03</span>模拟法庭</a>
-            <a href="#memory"><span>04</span>记忆系统</a>
-            <a href="#security"><span>05</span>沙箱边界</a>
+          <nav className="hero-index" aria-label="本页章节">
+            {DESIGN_TOC.map(({ hash, no, label }) => (
+              <a
+                key={hash}
+                href={hash}
+                className={spyActive === hash ? "is-active" : ""}
+                aria-current={spyActive === hash ? "true" : undefined}
+                onClick={scrollToc(hash)}
+              >
+                <span>{no}</span>
+                {label}
+              </a>
+            ))}
           </nav>
         </div>
       </section>
 
       {/* Component 1: Overall Topology & MCPS */}
       <section id="topology" className="section section--design" aria-labelledby="topo-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>01 / 整体拓扑与工具隔离</p>
           <h2 id="topo-title">统一网关转发，工具可见性严格控制。</h2>
         </div>
 
-        <div className="design-content reveal">
+        <div className="design-content">
           <p className="section-lead-paragraph">
             Lawver 采用分层的微服务架构。前端基于 React 19 / Vite 提供沉浸式聊天、模拟法庭和工作区控制；后端使用 FastAPI 构建，通过统一的 <code>mcps.py</code> 工具转发层，将所有底层能力以 Model Context Protocol (MCP) 规约暴露给 Agent 编排层。
           </p>
 
           {/* Premium Architecture Diagram */}
-          <div className="topo-stack reveal">
+          <div className="topo-stack">
             <article className="topo-row">
               <div className="topo-row__head">
                 <span>01</span>
@@ -129,12 +154,12 @@ export default function DesignPage() {
 
       {/* Component 2: Dual-Track Pipelines */}
       <section id="pipeline" className="section section--design" aria-labelledby="pipeline-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>02 / 智能体编排与输出审查</p>
           <h2 id="pipeline-title">双轨决策，输出多级审查净化。</h2>
         </div>
 
-        <div className="design-content reveal">
+        <div className="design-content">
           <p className="section-lead-paragraph">
             Lawver 支持 <strong>Direct Mode（默认问答）</strong> 和 <strong>Plan-and-Solve（规划求解）</strong> 两套决策管线，分别应对日常即时咨询与多请求、长链路深度案件分析。
           </p>
@@ -158,7 +183,7 @@ export default function DesignPage() {
           </div>
 
           {/* Output Checking Process */}
-          <div className="ocp-section reveal">
+          <div className="ocp-section">
             <div className="ocp-banner">
               <div className="ocp-badge">OCP</div>
               <h3>Output Check Process (输出审查流水线)</h3>
@@ -189,18 +214,18 @@ export default function DesignPage() {
 
       {/* Component 3: Mock Court */}
       <section id="court" className="section section--design" aria-labelledby="court-title">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>03 / 多智能体模拟法庭</p>
           <h2 id="court-title">有限状态机编排，四角色物理隔离记忆。</h2>
         </div>
 
-        <div className="design-content reveal">
+        <div className="design-content">
           <p className="section-lead-paragraph">
             模拟法庭是 Lawver 的一项核心工程突破。它不仅是一个简单的多人对话，而是一个由 <strong>有限状态机 (FSM)</strong> 驱动、严格隔离各方信息差的模拟庭审对抗环境。
           </p>
 
           {/* FSM Stage visualization */}
-          <div className="fsm-visual reveal">
+          <div className="fsm-visual">
             <h4>庭审有限状态机流程 (FSM States)</h4>
             <div className="fsm-rail">
               <div className="fsm-stage"><span>01</span><strong>开庭准备</strong></div>
@@ -213,7 +238,7 @@ export default function DesignPage() {
             <p className="fsm-meta">支持 <strong>民事、行政、刑事</strong> 三类基础案由状态流转，各阶段拥有明确的进入和退出条件。</p>
           </div>
 
-          <div className="court-roles reveal">
+          <div className="court-roles">
             <div className="role-grid">
               <div className="role-card">
                 <div className="role-icon font-serif">审</div>
@@ -238,7 +263,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="trust-grid reveal">
+          <div className="trust-grid">
             <div className="trust-card">
               <h4>四角色私有记忆隔离</h4>
               <p>为防止 AI 角色在生成回复时「作弊」，系统为 Judge、Opponent、Reviewer 和 User Agent 分配了独立的记忆作用域 (Memory Scopes)。公开案卷和庭审笔录写入共享存储，而各自的诉讼策略、底牌 brief 隔离在各自私有空间，不可跨域读取。</p>
@@ -253,12 +278,12 @@ export default function DesignPage() {
 
       {/* Component 4: Context & Memory System */}
       <section id="memory" className="section section--design" aria-labelledby="memory-title-design">
-        <div className="section__heading reveal">
+        <div className="section__heading">
           <p>04 / 多路召回记忆系统</p>
           <h2 id="memory-title-design">拒绝暴力拼接历史，通过语义多路融合提取关键。</h2>
         </div>
 
-        <div className="design-content reveal">
+        <div className="design-content">
           <p className="section-lead-paragraph">
             传统的 AI 助手往往通过暴力拼接全部对话历史来保持记忆，这不仅导致上下文极度臃肿，且容易引入过期和矛盾的事实。Lawver 设计了基于多路召回排序的<strong>对话级结构化记忆系统</strong>。
           </p>
@@ -302,12 +327,12 @@ export default function DesignPage() {
           the 1180px content width. */}
       <section id="security" className="band--dark" ref={securityRef} aria-labelledby="sec-title">
         <div className="section section--design">
-          <div className="section__heading reveal">
+          <div className="section__heading">
             <p>05 / 沙箱边界与系统安全</p>
             <h2 id="sec-title">事实先于承诺，数据逻辑物理强隔离。</h2>
           </div>
 
-          <div className="design-content reveal">
+          <div className="design-content">
             <p className="section-lead-paragraph">
               我们秉持「安全边界先于产品承诺」的原则，为涉案敏感材料、上传文件与代码执行环境构筑了严密的底层护城河。
             </p>
@@ -335,9 +360,9 @@ export default function DesignPage() {
 
       {/* Footer / CTA */}
       <section className="final design-final">
-        <h2 className="reveal">致力于构建严谨、可追溯且高度安全的法律科技。</h2>
-        <p className="reveal">Lawver 持续优化其编排流程，努力在专业法律场景中为您提供最坚实的决策辅助支持。</p>
-        <div className="final__cta-group reveal" style={delay(160)}>
+        <h2>致力于构建严谨、可追溯且高度安全的法律科技。</h2>
+        <p>Lawver 持续优化其编排流程，努力在专业法律场景中为您提供最坚实的决策辅助支持。</p>
+        <div className="final__cta-group">
           <Link to="/" className="primary-cta">返回产品首页</Link>
           <Link to="/download" className="secondary-cta">前往下载中心</Link>
         </div>

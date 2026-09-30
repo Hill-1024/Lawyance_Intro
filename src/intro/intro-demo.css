@@ -1,11 +1,13 @@
 /* 交互体验演示区块样式（自 WorkbenchDemo.vue scoped 样式移植，token 化，
    命名空间 .lawver-intro）。del/ins 与工作台内联预览同源：--color-danger-500 /
-   --color-success-500。 */
+   --color-success-500。
+   内容宽向 1180 主骨架靠拢（原 1440px+5vw 边线外跳，收为 1180+28px 边距）；
+   断点向全站 980/640 对齐（原 1100/700 错开）。 */
 
 .lawver-intro .lawver-demo-section {
-  max-width: 1440px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 80px 5vw 100px;
+  padding: 80px 28px 100px;
 }
 
 .lawver-intro .demo-intro {
@@ -364,7 +366,11 @@
   flex-shrink: 0;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 980px) {
+  .lawver-intro .lawver-demo-section {
+    padding: 64px 22px 80px;
+  }
+
   .lawver-intro .demo-workbench {
     grid-template-columns: minmax(0, 1fr) 310px;
   }
@@ -374,9 +380,9 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 640px) {
   .lawver-intro .lawver-demo-section {
-    padding: 50px 20px;
+    padding: 50px 18px;
   }
 
   .lawver-intro .demo-workbench {
@@ -391,6 +397,13 @@
 
   .lawver-intro .demo-mobile-tabs button {
     flex: 1;
+    /* 最小按压反馈（全站统一语）。 */
+    transition: background var(--dur-fast) var(--ease-standard),
+      transform var(--dur-fast) var(--ease-emphasized);
+  }
+
+  .lawver-intro .demo-mobile-tabs button:active {
+    transform: scale(0.98);
   }
 
   .lawver-intro .demo-workbench .mobile-hidden {
@@ -442,5 +455,13 @@
   .lawver-intro .demo-reference button {
     width: 44px;
     height: 44px;
+  }
+}
+
+/* 演示区在 980/640 断点无规则：桌面三栏不断裂过渡到折叠布局，
+   980 下文档区保持可读行宽。 */
+@media (max-width: 980px) {
+  .lawver-intro .demo-document article {
+    padding: 36px 28px 48px;
   }
 }
