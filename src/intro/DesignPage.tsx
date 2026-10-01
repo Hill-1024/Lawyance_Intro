@@ -7,7 +7,7 @@
 import { useRef } from "react";
 import { Box, LockKeyhole } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAmbientBackground, useMotion, useScrollSpy, scrollToHashTarget } from "./effects";
+import { useAmbientBackground, useScrollSpy, scrollToHashTarget } from "./effects";
 import "./intro-design.css";
 
 
@@ -33,8 +33,7 @@ export default function DesignPage() {
   // 沙箱安全节是整页唯一的深色横幅：它充满视口时驱动整页背景随之变暗。
   // enabled 受布局级动效总开关控制（头部全局按钮），暂停后只落一帧静态。
   const securityRef = useRef<HTMLElement>(null);
-  const { paused: motionPaused } = useMotion();
-  useAmbientBackground(securityRef, !motionPaused);
+  useAmbientBackground(securityRef, true);
   const spyActive = useScrollSpy(DESIGN_TOC_HASHES);
 
   return (

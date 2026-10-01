@@ -16,7 +16,6 @@
 
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
-import { Pause, Play } from "lucide-react";
 import { BrandMark } from "../components/Brand";
 import { AccountWidget } from "./AccountWidget";
 import type { AccountSession } from "../services/api";
@@ -28,7 +27,6 @@ import {
   scrollToHashTarget,
   scrollToHashWhenReady,
   scrollToTop,
-  useMotion,
   useScrollEffects,
   useScrollSpy,
 } from "./effects";
@@ -70,7 +68,6 @@ function IntroShell({ activePage, account, onAccountChange, children }: IntroLay
   const navigate = useNavigate();
   const navigationType = useNavigationType();
   const isHome = activePage === "home";
-  const { paused: motionPaused, toggle: toggleMotion } = useMotion();
 
   // scrollspy：首页跟 6 个章节锚点，设计页跟本页 5 个目录；结果复用
   // is-active / aria-current 语义（与跨页激活态同一样式）。
@@ -166,7 +163,7 @@ function IntroShell({ activePage, account, onAccountChange, children }: IntroLay
   };
 
   return (
-    <div className={"lawver-intro" + (motionPaused ? " motion-paused" : "")}>
+    <div className="lawver-intro">
       <header className={"site-header" + (scrolled ? " is-scrolled" : "")}>
         <button
           type="button"
@@ -235,21 +232,6 @@ function IntroShell({ activePage, account, onAccountChange, children }: IntroLay
             }
             onAccountChange={onAccountChange}
           />
-          <button
-            type="button"
-            className="motion-toggle motion-toggle--header"
-            aria-pressed={motionPaused}
-            aria-label={motionPaused ? "启用动效" : "暂停动效"}
-            title={motionPaused ? "启用动效" : "暂停动效"}
-            onClick={toggleMotion}
-          >
-            {motionPaused ? (
-              <Play size={14} strokeWidth={2} aria-hidden="true" />
-            ) : (
-              <Pause size={14} strokeWidth={2} aria-hidden="true" />
-            )}
-            <span aria-hidden="true">{motionPaused ? "动效已暂停" : "动效开"}</span>
-          </button>
           <a href={isAuthenticated ? workbenchPath : "/login"} className="site-header__cta">
             进入工作台
           </a>

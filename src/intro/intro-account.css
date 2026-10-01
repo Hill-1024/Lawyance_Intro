@@ -5,7 +5,7 @@
  * 订阅徽标是唯一的语义色扩展（Go=品牌蓝 / Pro=品牌青 / Max=琥珀 / Business=墨色），
  * 全部走低饱和浅底深字，保证 AA 对比；按量账户不出徽标。
  * 动效只动 transform/opacity：浮层 160ms 标准 ease + 4px 上浮，登录弹窗遮罩 200ms；
- * .motion-paused（页内开关）与 prefers-reduced-motion 都会把它归零。
+ * prefers-reduced-motion 会把它们归零。
  */
 
 /* ── 触发器 ──────────────────────────────────────────────────────────────── */
@@ -436,14 +436,7 @@
   transform: none;
 }
 
-/* ── 动效降级：页内暂停开关与系统 reduced-motion ────────────────────────── */
-
-.lawver-intro.motion-paused .account-flyout,
-.lawver-intro.motion-paused .account-modal,
-.lawver-intro.motion-paused .account-modal-backdrop,
-.lawver-intro.motion-paused .account-avatar--skeleton {
-  animation: none;
-}
+/* ── 动效降级：系统 reduced-motion ──────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .lawver-intro .account-flyout,

@@ -182,9 +182,9 @@ export function useMotion(): MotionState {
 }
 
 /**
- * 动效总开关：初始跟随系统 prefers-reduced-motion（读缓存，不直查 media）。
- * paused=true 时各页把 useAmbientBackground 的 enabled 置 false（落一帧静态），
- * 卡堆停掉 rAF（见 HomePage），CSS 侧按 .motion-paused 停入场过渡。
+ * 动效上下文：初始跟随系统 prefers-reduced-motion（读缓存，不直查 media）。
+ * 页内的暂停开关已移除，当前没有 UI 会把 paused 置 true——上下文保留，
+ * 环境光/卡堆等消费方仍以 paused=false 常态运行；无障碍降级走系统 media。
  */
 export function MotionProvider({ children }: { children: ReactNode }) {
   const [paused, setPaused] = useState(() =>

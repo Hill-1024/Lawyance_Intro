@@ -165,13 +165,6 @@
   gap: 10px;
 }
 
-/* 头部里的动效开关：比 hero 区那颗更小一号，音量低于主 CTA。 */
-.lawver-intro .motion-toggle--header {
-  padding: 5px 12px;
-  font-size: 12px;
-  line-height: 18px;
-}
-
 /* 品牌按钮：重置原生 button 样式，外观与原来的 Link 版一致。 */
 .lawver-intro .intro-brand--button {
   border: 0;
@@ -384,54 +377,6 @@
   gap: 16px;
   justify-content: center;
   margin-top: 0;
-}
-
-/*
- * 动效开关（自 Astro 版回迁）。它服务于对动效敏感的人，音量要低于主 CTA：
- * 一颗安静的描边胶囊，不做填充色。
- */
-.lawver-intro .motion-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
-  background: transparent;
-  color: var(--fg-3);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 18px;
-  cursor: pointer;
-  transition:
-    color var(--dur-fast) var(--ease-standard),
-    border-color var(--dur-fast) var(--ease-standard);
-}
-
-.lawver-intro .motion-toggle:hover {
-  color: var(--fg-1);
-  border-color: var(--border-strong);
-}
-
-.lawver-intro .motion-toggle:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* 暂停态：只停路由过渡与环境光（内容本身不随滚动浮现）。
-   不用 transition:none !important 全杀，否则按钮 :hover/:active 一起冻住。 */
-.lawver-intro.motion-paused .intro-route,
-.lawver-intro.motion-paused .page::before {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* 首页暂停提示（动效开关已提升到头部，这里只是一行说明文字）。 */
-.lawver-intro .motion-note {
-  margin: 0;
-  color: var(--fg-4);
-  font-size: 12.5px;
-  line-height: 20px;
 }
 
 /* ---- 章节骨架 ---- */
@@ -1321,15 +1266,6 @@
   .lawver-intro .site-nav__group:first-child,
   .lawver-intro .site-nav__divider {
     display: none;
-  }
-
-  /* 头部动效开关在手机上只留图标，避免与 CTA 抢宽。 */
-  .lawver-intro .motion-toggle--header span {
-    display: none;
-  }
-
-  .lawver-intro .motion-toggle--header {
-    padding: 5px 9px;
   }
 
   .lawver-intro .site-nav a {

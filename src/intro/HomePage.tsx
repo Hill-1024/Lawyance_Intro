@@ -13,7 +13,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import WorkbenchDemo from "./WorkbenchDemo";
-import { useAmbientBackground, useMotion } from "./effects";
+import { useAmbientBackground } from "./effects";
 
 interface HomePageProps {
   isAuthenticated: boolean;
@@ -140,12 +140,9 @@ const TRUST_ITEMS = [
 
 export default function HomePage({ isAuthenticated }: HomePageProps) {
   const trustRef = useRef<HTMLElement>(null);
-  // 动效总开关来自布局级 MotionProvider（头部全局按钮控制）：
-  // paused 时环境光只落一帧静态（useAmbientBackground enabled=false）。
-  // 内容不随滚动浮现（quote.law 基准：内容直接在场），滚动期没有逐帧监听。
-  const { paused: motionPaused } = useMotion();
-
-  useAmbientBackground(trustRef, !motionPaused);
+  // 环境光常开（动效暂停开关已随头部按钮一起移除）；内容不随滚动浮现
+  // （quote.law 基准：内容直接在场），滚动期没有逐帧监听。
+  useAmbientBackground(trustRef, true);
 
   useEffect(() => {
     document.title = "Lawver | 法律 AI 工作台";
@@ -178,10 +175,6 @@ export default function HomePage({ isAuthenticated }: HomePageProps) {
                 <span>下载客户端</span>
               </Link>
             </div>
-            {/* 动效开关已提升到布局头部（全局），这里留一行提示，不再放第二个按钮。 */}
-            {motionPaused && (
-              <p className="motion-note">动效已暂停，可在顶部导航重新启用。</p>
-            )}
           </div>
         </div>
       </section>

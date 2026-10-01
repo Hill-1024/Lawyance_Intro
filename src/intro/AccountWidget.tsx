@@ -7,7 +7,7 @@
  *
  * 交互约定与工作台菜单一致：悬停 120ms 意图延迟打开、离开 200ms 宽限关闭，
  * 触屏与键盘走点击/焦点；Escape 与外点关闭。弹层动效只动 transform/opacity，
- * 且尊重页面的 motion-paused 与系统 reduced-motion（见 intro-account.css）。
+ * 系统层面的 prefers-reduced-motion 会让浮层动画归零（见 intro-account.css）。
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
