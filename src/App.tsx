@@ -80,7 +80,18 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomeRoute account={account} onAccountChange={setAccount} />} />
       <Route path="/design" element={withLayout('design', <DesignPage />, account, setAccount)} />
-      <Route path="/pricing" element={withLayout('pricing', <PricingPage />, account, setAccount)} />
+      <Route
+        path="/pricing"
+        element={
+          <IntroLayout activePage="pricing" account={account} onAccountChange={setAccount}>
+            <Suspense fallback={<PageFallback />}>
+              <div key="pricing" className="intro-route">
+                <PricingPage account={account} onAccountChange={setAccount} />
+              </div>
+            </Suspense>
+          </IntroLayout>
+        }
+      />
       <Route path="/download" element={withLayout('download', <DownloadPage />, account, setAccount)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

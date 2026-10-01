@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, MessageCircle, X } from "lucide-react";
-import { apiUrl } from "../services/api";
+import { apiUrl, type AccountSession } from "../services/api";
 import "./intro-pricing.css";
 
 interface AccountProfile {
@@ -56,11 +56,19 @@ const FALLBACK_PLANS: Plan[] = [
   },
 ];
 
-export default function PricingPage() {
+export default function PricingPage({
+  account,
+}: {
+  /** 布局层的会话信号：undefined=探测中，null=未登录，对象=已登录（含登录/登出后的新引用）。 */
+  account: AccountSession | null | undefined;
+  onAccountChange?: (session: AccountSession | null) => void;
+}) {
   const [plans, setPlans] = useState<Plan[]>(FALLBACK_PLANS);
   const [checkoutPlan, setCheckoutPlan] = useState<Plan | null>(null);
   const [billing, setBilling] = useState<"month" | "year">("month");
-  const [account, setAccount] = useState<AccountProfile | null>(null);
+  // 档位明细（pending/生效日）来自 /api/profile，比会话概要更全；
+  // account prop 是布局层的会话信号（登录/登出时引用变化 → 重新取一次）。
+  const [profile, setProfile] = useState<AccountProfile | null>(null);
   // 降级/切换确认弹窗的目标档位；null = 不显示。
   const [scheduleTarget, setScheduleTarget] = useState<Plan | null>(null);
 
@@ -73,20 +81,22 @@ export default function PricingPage() {
       })
       .catch(() => undefined);
     // 登录用户才有的档位状态（当前订阅/降级/切换）；未登录全部按「订阅」渲染。
+    // account 变化（登录成功/登出）都会触发重取，避免弹窗登录后页面状态不同步。
     fetch(apiUrl("/api/profile"), { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data?.username) setAccount(data as AccountProfile);
+        if (!cancelled && data?.username) setProfile(data as AccountProfile);
+        else if (!cancelled) setProfile(null);
       })
       .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [account]);
 
-  const currentPlan = account?.plan ?? null;
-  const pendingPlan = account?.pending_plan ?? null;
-  const pendingDate = account?.pending_effective_at ?? null;
+  const currentPlan = profile?.plan ?? null;
+  const pendingPlan = profile?.pending_plan ?? null;
+  const pendingDate = profile?.pending_effective_at ?? null;
   const currentRank = currentPlan ? PLAN_RANK[currentPlan] ?? 0 : null;
 
   return (
@@ -229,13 +239,13 @@ export default function PricingPage() {
         <CheckoutDialog plan={checkoutPlan} onClose={() => setCheckoutPlan(null)} />
       )}
 
-      {scheduleTarget && account && (
+      {scheduleTarget && (
         <SchedulePlanDialog
           target={scheduleTarget}
-          effectiveDate={formatDate(account.pending_effective_at || nextSettlementISO())}
+          effectiveDate={formatDate(profile?.pending_effective_at || nextSettlementISO())}
           onClose={() => setScheduleTarget(null)}
           onScheduled={(updated) => {
-            setAccount(updated);
+            setProfile(updated);
             setScheduleTarget(null);
           }}
         />
