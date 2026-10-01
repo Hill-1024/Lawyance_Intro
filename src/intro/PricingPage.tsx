@@ -10,6 +10,22 @@ import { Check, MessageCircle, X } from "lucide-react";
 import { apiUrl } from "../services/api";
 import "./intro-pricing.css";
 
+interface AccountProfile {
+  username: string;
+  plan: string;
+  pending_plan: string | null;
+  pending_effective_at: string | null;
+}
+
+/** 自服务只放行降级与切回按量；升级仍走客服（与后端 PLAN_RANK 口径一致）。 */
+const PLAN_RANK: Record<string, number> = { metered: 0, go: 1, pro: 2, max: 3 };
+
+const formatDate = (iso: string | null) => {
+  if (!iso) return "";
+  const day = new Date(iso);
+  return `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+};
+
 interface Plan {
   id: string;
   name: string;
@@ -44,6 +60,9 @@ export default function PricingPage() {
   const [plans, setPlans] = useState<Plan[]>(FALLBACK_PLANS);
   const [checkoutPlan, setCheckoutPlan] = useState<Plan | null>(null);
   const [billing, setBilling] = useState<"month" | "year">("month");
+  const [account, setAccount] = useState<AccountProfile | null>(null);
+  // 降级/切换确认弹窗的目标档位；null = 不显示。
+  const [scheduleTarget, setScheduleTarget] = useState<Plan | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,10 +72,22 @@ export default function PricingPage() {
         if (!cancelled && data?.plans?.length) setPlans(data.plans);
       })
       .catch(() => undefined);
+    // 登录用户才有的档位状态（当前订阅/降级/切换）；未登录全部按「订阅」渲染。
+    fetch(apiUrl("/api/profile"), { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.username) setAccount(data as AccountProfile);
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const currentPlan = account?.plan ?? null;
+  const pendingPlan = account?.pending_plan ?? null;
+  const pendingDate = account?.pending_effective_at ?? null;
+  const currentRank = currentPlan ? PLAN_RANK[currentPlan] ?? 0 : null;
 
   return (
     <main id="top" className="page">
@@ -138,14 +169,44 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
-                className="pricing-card__cta"
-                onClick={() => setCheckoutPlan(plan)}
-              >
-                <MessageCircle size={16} strokeWidth={2} aria-hidden="true" />
-                订阅
-              </button>
+              {(() => {
+                const isCurrent = currentPlan === plan.id;
+                const isPendingTarget = pendingPlan === plan.id;
+                // 降级/切回按量：需要确认的预约变更
+                const isDowngrade =
+                  currentRank !== null &&
+                  (PLAN_RANK[plan.id] ?? 99) < currentRank;
+                if (isCurrent || isPendingTarget) {
+                  return (
+                    <button type="button" className="pricing-card__cta" disabled>
+                      {isPendingTarget || (pendingPlan && isCurrent)
+                        ? `已预约 · ${formatDate(pendingDate)} 生效`
+                        : "当前订阅"}
+                    </button>
+                  );
+                }
+                if (isDowngrade) {
+                  return (
+                    <button
+                      type="button"
+                      className="pricing-card__cta"
+                      onClick={() => setScheduleTarget(plan)}
+                    >
+                      {plan.id === "metered" ? "切换" : "降级"}
+                    </button>
+                  );
+                }
+                return (
+                  <button
+                    type="button"
+                    className="pricing-card__cta"
+                    onClick={() => setCheckoutPlan(plan)}
+                  >
+                    <MessageCircle size={16} strokeWidth={2} aria-hidden="true" />
+                    订阅
+                  </button>
+                );
+              })()}
             </article>
           ))}
         </div>
@@ -167,7 +228,106 @@ export default function PricingPage() {
       {checkoutPlan && (
         <CheckoutDialog plan={checkoutPlan} onClose={() => setCheckoutPlan(null)} />
       )}
+
+      {scheduleTarget && account && (
+        <SchedulePlanDialog
+          target={scheduleTarget}
+          effectiveDate={formatDate(account.pending_effective_at || nextSettlementISO())}
+          onClose={() => setScheduleTarget(null)}
+          onScheduled={(updated) => {
+            setAccount(updated);
+            setScheduleTarget(null);
+          }}
+        />
+      )}
     </main>
+  );
+}
+
+/** 与服务端 schedule_plan_change 的兜底口径一致：无周期到期日按下个自然月 1 号。 */
+function nextSettlementISO(): string {
+  const now = new Date();
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+  return next.toISOString();
+}
+
+/**
+ * 预约变更确认弹窗：降级/切回按量共用——下一结算周期生效、生效前保留当前权益、
+ * 可随时在用量控制台取消。确认后本地直接采用服务端返回的最新 profile。
+ */
+function SchedulePlanDialog({
+  target,
+  effectiveDate,
+  onClose,
+  onScheduled,
+}: {
+  target: Plan;
+  effectiveDate: string;
+  onClose: () => void;
+  onScheduled: (profile: AccountProfile) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const isSwitch = target.id === "metered";
+
+  const confirm = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const response = await fetch(apiUrl("/api/subscription/change"), {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target_plan: target.id }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setError(data.detail || "操作失败，请稍后重试。");
+        return;
+      }
+      onScheduled(data.profile);
+    } catch {
+      setError("网络不可用，请稍后重试。");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      className="pricing-checkout"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pricing-schedule-title"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="pricing-checkout__panel pricing-checkout__panel--narrow">
+        <span className="pricing-checkout__plan">{target.name}</span>
+        <h2 id="pricing-schedule-title">
+          {isSwitch ? "切换为按量计费？" : `降级到「${target.name}」？`}
+        </h2>
+        <p className="pricing-checkout__lead">
+          将于 <strong className="pricing-checkout__date">{effectiveDate}</strong>
+          （下一结算周期）生效。在此之前你仍保有当前档位的全部权益；
+          这项变更可随时在「用量控制台」里取消。
+        </p>
+        {error && (
+          <p className="pricing-checkout__error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="pricing-checkout__actions">
+          <button type="button" className="pricing-checkout__cancel" onClick={onClose}>
+            取消
+          </button>
+          <button type="button" className="pricing-checkout__confirm" disabled={busy} onClick={confirm}>
+            {busy ? "正在提交…" : isSwitch ? "确认切换" : "确认降级"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

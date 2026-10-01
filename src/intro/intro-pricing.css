@@ -381,3 +381,92 @@
     animation: none;
   }
 }
+
+/* ── 预约变更确认弹窗（降级/切换共用）─────────────────────────────────── */
+
+.pricing-checkout__panel--narrow {
+  width: min(400px, 100%);
+}
+
+.pricing-checkout__panel--narrow h2 {
+  margin: 4px 0 10px;
+}
+
+.pricing-checkout__date {
+  color: var(--fg-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-checkout__error {
+  margin: 2px 0 0;
+  color: #b04642;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.pricing-checkout__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.pricing-checkout__cancel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--fg-3);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 140ms var(--ease-standard);
+}
+
+.pricing-checkout__cancel:hover {
+  color: var(--fg-1);
+}
+
+.pricing-checkout__confirm {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 18px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-on);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  transition: filter 200ms var(--ease-standard), transform 200ms var(--ease-emphasized);
+}
+
+.pricing-checkout__confirm:hover {
+  filter: brightness(0.94);
+}
+
+.pricing-checkout__confirm:active {
+  transform: scale(0.97);
+}
+
+.pricing-checkout__confirm:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* 当前订阅/已预约的非交互按钮：与主 CTA 同形但明显更安静 */
+button.pricing-card__cta:disabled {
+  background: color-mix(in srgb, var(--fg-1) 6%, transparent);
+  color: var(--fg-2);
+  cursor: default;
+}
+
+button.pricing-card__cta:disabled:hover {
+  filter: none;
+}
