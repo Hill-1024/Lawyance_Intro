@@ -452,3 +452,21 @@
     transition: none;
   }
 }
+
+/* 升级订阅：品牌蓝→青渐变文字，菜单里最醒目的一行 */
+.account-flyout__item--upgrade {
+  background: linear-gradient(92deg, var(--brand-primary-500), var(--brand-tertiary-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 650;
+}
+
+.account-flyout__item--upgrade svg {
+  color: var(--brand-primary-500);
+}
+
+.account-flyout__item--upgrade:hover {
+  background: var(--accent-quiet);
+  filter: saturate(1.25);
+}

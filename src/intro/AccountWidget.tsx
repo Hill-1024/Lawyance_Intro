@@ -11,7 +11,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LogOut, UserRound, X } from 'lucide-react';
+import { ChartColumn, LogOut, Sparkles, UserRound, X } from 'lucide-react';
 import { BrandMark } from '../components/Brand';
 import { avatarUrlOf, loginWithPassword, logout, type AccountSession } from '../services/api';
 
@@ -195,6 +195,26 @@ export function AccountWidget({
             </span>
           </div>
           <div className="account-flyout__divider" aria-hidden="true" />
+          {session.plan !== "max" && session.plan !== "business" && (
+            <a
+              className="account-flyout__item account-flyout__item--upgrade"
+              role="menuitem"
+              href="/pricing"
+              onClick={() => setOpen(false)}
+            >
+              <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+              <span className="account-upgrade-text">升级订阅</span>
+            </a>
+          )}
+          <a
+            className="account-flyout__item"
+            role="menuitem"
+            href="/usage"
+            onClick={() => setOpen(false)}
+          >
+            <ChartColumn size={15} strokeWidth={2} aria-hidden="true" />
+            用量控制台
+          </a>
           <a
             className="account-flyout__item"
             role="menuitem"
