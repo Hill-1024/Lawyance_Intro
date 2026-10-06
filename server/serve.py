@@ -107,7 +107,8 @@ class IntroHandler(SimpleHTTPRequestHandler):
             self.wfile.write(payload)
 
     # ── 路由 ──────────────────────────────────────────────────────────────
-    def do_GET(self) -> None:  # noqa: N802 - http.server 约定
+    # GET 与 HEAD 共用同一套路由，保证拨测用 HEAD 得到的状态码和 GET 完全一致。
+    def _route(self, *, head_only: bool) -> None:
         path = urlparse(self.path).path
         if path == "/healthz":
             body = json.dumps({"status": "ok", "root": str(self._current_root())}).encode()
@@ -116,7 +117,8 @@ class IntroHandler(SimpleHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", NO_CACHE)
             self.end_headers()
-            self.wfile.write(body)
+            if not head_only:
+                self.wfile.write(body)
             return
         target = self._resolve(self.path)
         if target is None:
@@ -129,14 +131,13 @@ class IntroHandler(SimpleHTTPRequestHandler):
                 self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
                 return
             target = fallback
-        self._send_file(target)
+        self._send_file(target, head_only=head_only)
+
+    def do_GET(self) -> None:  # noqa: N802 - http.server 约定
+        self._route(head_only=False)
 
     def do_HEAD(self) -> None:  # noqa: N802
-        target = self._resolve(self.path)
-        if target is None:
-            self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
-            return
-        self._send_file(target, head_only=True)
+        self._route(head_only=True)
 
     def log_message(self, fmt: str, *args) -> None:  # noqa: D102
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
