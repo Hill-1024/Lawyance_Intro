@@ -774,13 +774,17 @@
 .lawver-intro .trust,
 .lawver-intro .band--dark {
   position: relative;
+  /* 淡入淡出按 px 收放，不再按百分比：内容距区块顶/底最近 78px（≤640 内边距，
+     设计页深色带 78/96px），56px 完成实色可保证任何视口、任何区块高度下，
+     标题与首末卡都落在 ≥0.98 不透明区内（旧百分比版在移动端区块拉长后，
+     标题落进透明段，白字压浅底近乎隐形，见移动审计 B3）。 */
   background: linear-gradient(
     180deg,
     rgba(11, 13, 20, 0) 0%,
-    rgba(11, 13, 20, var(--ambient-dark-wash)) 18%,
-    rgba(11, 13, 20, 0.98) 32%,
-    rgba(11, 13, 20, 0.98) 72%,
-    rgba(11, 13, 20, var(--ambient-dark-wash)) 88%,
+    rgba(11, 13, 20, var(--ambient-dark-wash)) 10px,
+    rgba(11, 13, 20, 0.98) 56px,
+    rgba(11, 13, 20, 0.98) calc(100% - 56px),
+    rgba(11, 13, 20, var(--ambient-dark-wash)) calc(100% - 10px),
     rgba(11, 13, 20, 0) 100%
   );
 }
