@@ -158,9 +158,11 @@
   background: var(--border-default);
 }
 
-/* 头部右侧：动效开关 + 进入工作台。 */
+/* 头部右侧：登录挂件 + 进入工作台。不收缩、不折行：
+   窄视口下宁可让中间导航让位，也不让 CTA 竖排折字或被挤出屏幕。 */
 .lawver-intro .site-header__actions {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10px;
 }
@@ -197,6 +199,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
   min-height: 38px;
   border-radius: var(--radius-pill);
   background: var(--accent);
@@ -1253,23 +1257,12 @@
     padding: 8px 10px;
   }
 
-  /* 药丸放不下八个入口；跨页链接是离开本页的唯一入口，保留，页内锚点收起。
-     第一组（本页章节）与分隔线一并隐藏，避免留下孤立分隔线。 */
+  /* 320-412 的头部药丸放不下任何链接组：链接被 flex 逐字竖排（33px 宽四行）、
+     把登录与 CTA 一起挤爆并溢出屏幕（移动审计 B1）。整条导航收起，头部只留
+     品牌 + 登录 + 进入工作台；跨页入口由页脚「页面」列承接（各视口可见），
+     首页章节由页脚「首页章节」组承接（IntroLayout 页脚注释同源）。 */
   .lawver-intro .site-nav {
-    gap: 4px;
-  }
-
-  .lawver-intro .site-nav__anchor {
     display: none;
-  }
-
-  .lawver-intro .site-nav__group:first-child,
-  .lawver-intro .site-nav__divider {
-    display: none;
-  }
-
-  .lawver-intro .site-nav a {
-    padding: 8px 10px;
   }
 
   .lawver-intro .site-header__cta {

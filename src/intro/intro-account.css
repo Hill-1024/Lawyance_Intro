@@ -30,6 +30,7 @@
   font-size: 13px;
   font-weight: 600;
   line-height: 20px;
+  white-space: nowrap;
   transition:
     border-color 200ms var(--ease-standard),
     color 200ms var(--ease-standard),
