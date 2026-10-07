@@ -187,6 +187,16 @@
   transform-origin: bottom right;
 }
 
+/* 悬停意图气泡只属于 hover 指针：触屏（hover: none / pointer: coarse）上它
+   会永久悬浮、盖住子页 hero 的 eyebrow（移动审计 B4），直接不渲染视觉；
+   窄视口一并收起，兜底交互媒体查询未随触屏模拟翻转的环境。登录引导由
+   点击「登录」弹出的弹窗承接（AccountWidget 里 loginOpen 时本就不渲染）。 */
+@media (hover: none), (pointer: coarse), (max-width: 640px) {
+  .lawver-intro .account-flyout--hint {
+    display: none;
+  }
+}
+
 @keyframes account-flyout-in {
   from {
     opacity: 0;
