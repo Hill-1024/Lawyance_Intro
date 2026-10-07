@@ -1440,21 +1440,24 @@
     max-width: none;
   }
 
+  /* 单列堆叠后桥接列失去左右连接语境，「BALANCE」读作游离杂字（移动审计 B8）：
+     退化为两卡之间的一条细分隔线，文字标签不再渲染；
+     aria-hidden 本就成立（HomePage.tsx），语义无损失。 */
   .lawver-intro .memory__bridge {
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-rows: auto;
+    display: block;
     width: 100%;
-    padding: 4px 0;
+    padding: 0;
   }
 
-  .lawver-intro .memory__bridge span {
-    width: auto;
+  .lawver-intro .memory__bridge span:first-of-type {
+    display: block;
+    width: 100%;
     height: 1px;
   }
 
+  .lawver-intro .memory__bridge span:last-of-type,
   .lawver-intro .memory__bridge strong {
-    padding: 0 14px;
-    writing-mode: horizontal-tb;
+    display: none;
   }
 
   .lawver-intro .memory__rows {
