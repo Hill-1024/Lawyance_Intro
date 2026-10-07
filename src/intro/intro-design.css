@@ -8,9 +8,9 @@
   padding: 96px 0;
 }
 
-.section--design + .section--design {
-  border-top: 1px solid var(--border-subtle);
-}
+/* 小节分隔线只用 .section__heading 的 border-top（intro-base.css，与首页同语言）。
+   原先这里还有一条 .section--design + .section--design 的 border-top，与小节标题
+   上方的 heading 线平行相距 78/96px，读作孤立空元素（移动审计 B7），已删。 */
 
 .design-content {
   margin-top: 56px;
