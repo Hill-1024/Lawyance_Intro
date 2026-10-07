@@ -1134,6 +1134,8 @@
 }
 
 .lawver-intro .site-footer__column a {
+  /* 纵向 padding 把命中区提到 22+22=44px（触控标准），各视口生效。 */
+  padding: 11px 0;
   color: #c3cad7;
   font-size: 14px;
   font-weight: 500;
