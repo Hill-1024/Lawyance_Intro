@@ -1058,11 +1058,14 @@
 
 .lawver-intro .site-footer .intro-brand {
   color: #f3f5f9;
-  /* 页脚是固定深色表面，logo 的品牌变量在此翻转为浅色，不随主题变化。 */
+  /* 页脚是固定深色表面，logo 的品牌变量在此翻转为浅色，不随主题变化。
+     字标消费的 --brand-wordmark 在 :root 已解析成浅色主题的 --brand-logo-ink，
+     子树重定义 --brand-logo-ink 不会重算它，必须一并覆写。 */
   --brand-logo-tile: rgba(255, 255, 255, 0.04);
   --brand-logo-border: rgba(255, 255, 255, 0.14);
   --brand-logo-inner-border: rgba(255, 255, 255, 0.09);
   --brand-logo-ink: #f3f5f9;
+  --brand-wordmark: #f3f5f9;
 }
 
 .lawver-intro .site-footer__brand p {
