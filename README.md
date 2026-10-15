@@ -61,3 +61,7 @@ sudo systemctl restart lawver-intro   # 只有改了 server/serve.py 才需要
 - 分流核心（主仓 `deploy/router/`）的介绍页路径表必须与本文件上面的表格一致；改路径表要两边一起改。
 - `/under_maintenance` 由核心自答，本仓库既不需要也不应该提供该路径。
 - 本仓库不注册 Service Worker：介绍页不需要离线壳，而 SW 的缓存回放会在功能页维护期间把用户留在旧页面上。
+- **主仓发 release 不需要触发本仓库做任何事**：下载中心的版本信息是运行时向功能页的
+  `/api/releases/android/latest` 取的（见「数据来源」），新版本会自动出现在页面上。所以
+  这里不该有"监听上游 release → 重建站点"的定时任务或部署钩子——同机部署后换版只走
+  上面的 `git pull && tools/build.sh`。（Cloudflare Pages 托管时期遗留的那条工作流已删除。）
