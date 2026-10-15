@@ -1,0 +1,64 @@
+name: Docker Image
+
+# 介绍页镜像推到 GHCR。与主仓的 docker-images.yml 同一套约定：
+# tag 触发、owner 小写、同时打版本与 sha 两个标签。
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build, for example v0.1.22'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Build and push lawver-intro
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        env:
+          CHECKOUT_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 origin "$CHECKOUT_REF" || git fetch --depth=1 origin "refs/tags/$CHECKOUT_REF"
+          git checkout --detach FETCH_HEAD
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          set -euo pipefail
+          # GHCR 拒绝大写 owner，必须小写化
+          OWNER="$(printf '%s' "${GITHUB_REPOSITORY_OWNER}" | tr 'A-Z' 'a-z')"
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+          echo "image=ghcr.io/${OWNER}/lawver-intro" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.image }}:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

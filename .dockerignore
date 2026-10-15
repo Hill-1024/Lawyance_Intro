@@ -1,0 +1,12 @@
+# 镜像构建上下文排除清单。镜像里只需要 server/，其余都是宿主上跑的东西——
+# releases/ 里堆着历次产物（每个几 MB），不排除会让构建上下文白传几十上百 MB。
+.git
+.github
+node_modules
+dist
+releases
+current
+.vscode
+.idea
+*.log
+tsconfig.tsbuildinfo
