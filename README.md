@@ -19,6 +19,19 @@ Lawver 的产品介绍页：与功能页**同域、不同进程**的独立站点
 
 两台机器同一套布局：`lawver.dev`（国内）与 `global.lawver.dev`（海外）各跑一份核心 + 功能页 + 介绍页，差异只有主机名和数据源。
 
+## 分支模型
+
+**`main` 是部署分支，`dev` 只用于迭代测试**（2026-10-16 起统一，主仓同一条规则）：
+
+- 部署机 `/srv/lawver-intro` 检出的是 `main`，`git pull && tools/build.sh` 拉的就是它；
+- 改动先推 `dev`，在 dev 上验证（`tools/build.sh` 出站点、核心路径分派正常）确认没问题，
+  再合到 `main` 供部署机拉取；
+- 不要把部署机切回 `dev`：那样"测过什么"和"线上是什么"会脱钩。
+
+历史上 `main` 曾是另一条线——Cloudflare Pages 托管的 **Astro 旧站**（与当前 React 站不同源，
+长期只靠一条定时工作流推空提交维持）。2026-10-16 已用 `dev` 覆盖 `main`，旧线保留在
+**标签 `legacy/astro-main`** 下，需要时 `git checkout legacy/astro-main` 可取回。
+
 ## 开发
 
 ```bash
