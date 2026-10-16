@@ -26,7 +26,8 @@ Lawver 的产品介绍页：与功能页**同域、不同进程**的独立站点
 - 部署机 `/srv/lawver-intro` 检出的是 `main`，`git pull && tools/build.sh` 拉的就是它；
 - 改动先推 `dev`，在 dev 上验证（`tools/build.sh` 出站点、核心路径分派正常）确认没问题，
   再合到 `main` 供部署机拉取；
-- 不要把部署机切回 `dev`：那样"测过什么"和"线上是什么"会脱钩。
+- 不要把部署机切回 `dev`：那样"测过什么"和"线上是什么"会脱钩；
+- 打 tag 发版也在 `main` 上做（介绍页镜像 `lawver-intro` 由 tag 触发构建）。
 
 历史上 `main` 曾是另一条线——Cloudflare Pages 托管的 **Astro 旧站**（与当前 React 站不同源，
 长期只靠一条定时工作流推空提交维持）。2026-10-16 已用 `dev` 覆盖 `main`，旧线保留在
